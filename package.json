@@ -1,0 +1,9 @@
+{
+  "name": "bugsnag-node",
+  "version": "0.1.0",
+  "main": "bugsnag-node.js"
+  "homepage": "http://bugsnag.com"
+  "dependencies": {
+    "tracejs": ">=0.1.0"
+  }
+}
