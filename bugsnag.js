@@ -6,7 +6,7 @@ var defaultErrorHash = {
   apiKey : "",
   notifier : {
     name : "Bugsnag Node Notifier",
-    version : "1.0.0",
+    version : "",
     url : "www.bugsnag.com"
   }
 }
@@ -76,6 +76,7 @@ exports.notify = function(error) {
   };
 
   var req = http.request(options, function(response) {});
+  console.log(payload)
   req.write(payload, 'utf8');
   req.end();
 }
@@ -88,13 +89,15 @@ exports.register = function(apiKey, options) {
   userIdLambda = (options.userId === undefined ? function() {return "unknown";} : options.userId);
   applicationVersion = (options.applicationVersion === undefined ? undefined : options.applicationVersion);
   if ( options.packageJSON !== undefined ) {
-    populateApplicationVersion(options.packageJSON);
+    applicationVersion = getPackageVersion(options.packageJSON);
   }
   if( applicationVersion === undefined || applicationVersion == "unknown" ) {
-    populateApplicationVersion(__dirname + '/../package.json');
+    applicationVersion = getPackageVersion(__dirname + '/../package.json');
   }
   
   projectDirectory = (options.projectDirectory === undefined ? "" : options.projectDirectory);
+  
+  defaultErrorHash.notifier.version = getPackageVersion(__dirname + '/package.json')
 }
 
 exports.setContext = function(lambda) {
@@ -113,13 +116,12 @@ exports.setApplicationVersion = function(version) {
   applicationVersion = version;
 }
 
-populateApplicationVersion = function(packageJSON) {
+getPackageVersion = function(packageJSON) {
   try {
     contents = fs.readFileSync(packageJSON, 'UTF-8');
   } catch(e) {
-    applicationVersion = "unknown";
-    return;
+    return "unknown";
   }
   packageInfo = JSON.parse(contents);
-  applicationVersion = packageInfo.version;
+  return packageInfo.version;
 }
