@@ -54,7 +54,7 @@ exports.notify = function(error) {
     },
     exceptions: [{
       errorClass: "Error",
-      message: stacktrace.first_line.substr(7),
+      message: stacktrace.first_line,
       stacktrace: []
     }]
   }];
@@ -100,6 +100,8 @@ exports.notify = function(error) {
 
 // Register to process uncaught exceptions properly
 exports.register = function(apiKey, options) {
+  options = (options === undefined ? {} : options)
+  
   Error.stackTraceLimit = Infinity;
   defaultErrorHash.apiKey = apiKey;
   releaseStage = (options.releaseStage === undefined ? "release" : options.releaseStage);
