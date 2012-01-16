@@ -1,9 +1,14 @@
 {
-  "name": "bugsnag-node",
+  "name": "bugsnag",
+  "description": "Bugsnag notifier for node.js scripts",
   "version": "0.1.0",
-  "main": "bugsnag-node.js"
-  "homepage": "http://bugsnag.com"
+  "main": "./bugsnag.js",
+  "homepage": "http://bugsnag.com",
   "dependencies": {
     "tracejs": ">=0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bugsnag/bugsnag-node.git"
   }
 }

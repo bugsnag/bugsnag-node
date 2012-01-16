@@ -53,9 +53,10 @@ exports.notify = function(error) {
       method: stacktrace.frames[i].named_location
     }
     if( projectDirectory != "" && 
-        stacktrace.frames[i].filename.indexOf(projectDirectory) == 0 && 
-        stacktrace.frames[i].filename.indexOf("node_modules") == -1) {
-      errorList[0].exceptions[0].stacktrace[i].inProject = true;
+        stacktrace.frames[i].filename.indexOf(projectDirectory) == 0) {
+      if ( stacktrace.frames[i].filename.indexOf("node_modules") == -1 ) {
+        errorList[0].exceptions[0].stacktrace[i].inProject = true;
+      }
       errorList[0].exceptions[0].stacktrace[i].file = stacktrace.frames[i].filename.substr(projectDirectory.length + 1);
     }
   }
