@@ -93,7 +93,6 @@ exports.notify = function(error) {
   };
 
   var req = http.request(options, function(response) {});
-  console.log(payload)
   req.write(payload, 'utf8');
   req.end();
 }
