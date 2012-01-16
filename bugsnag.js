@@ -1,6 +1,7 @@
 trace = require('tracejs').trace;
 http = require('http');
 fs = require('fs');
+path = require('path');
 
 var defaultErrorHash = {
   apiKey : "",
@@ -16,7 +17,7 @@ var contextLambda;
 var projectDirectory;
 var applicationVersion = "unknown";
 var onUncaughtException = function(err) {
-  exit();
+  exit(1);
 }
 
 process.on('uncaughtException', function(err) {
@@ -24,10 +25,22 @@ process.on('uncaughtException', function(err) {
   onUncaughtException();
 });
 
+getPackageVersion = function(packageJSON) {
+  try {
+    contents = fs.readFileSync(packageJSON, 'UTF-8');
+  } catch(e) {
+    return "unknown";
+  }
+  packageInfo = JSON.parse(contents);
+  return packageInfo.version;
+}
+
+// Send a test notification
 exports.testNotification = function() {
   exports.notify(new Error("Test error "));
 }
 
+// Notify about a caught error
 exports.notify = function(error) {
   var stacktrace = trace(error);
   var errorList = [{
@@ -41,7 +54,7 @@ exports.notify = function(error) {
     },
     exceptions: [{
       errorClass: "Error",
-      message: stacktrace.first_line,
+      message: stacktrace.first_line.substr(7),
       stacktrace: []
     }]
   }];
@@ -59,6 +72,10 @@ exports.notify = function(error) {
       }
       errorList[0].exceptions[0].stacktrace[i].file = stacktrace.frames[i].filename.substr(projectDirectory.length + 1);
     }
+  }
+  
+  if ( contextLambda !== undefined ) {
+    errorList[0].context = contextLambda();
   }
   
   defaultErrorHash.errors = errorList;
@@ -81,6 +98,7 @@ exports.notify = function(error) {
   req.end();
 }
 
+// Register to process uncaught exceptions properly
 exports.register = function(apiKey, options) {
   Error.stackTraceLimit = Infinity;
   defaultErrorHash.apiKey = apiKey;
@@ -92,36 +110,30 @@ exports.register = function(apiKey, options) {
     applicationVersion = getPackageVersion(options.packageJSON);
   }
   if( applicationVersion === undefined || applicationVersion == "unknown" ) {
-    applicationVersion = getPackageVersion(__dirname + '/../package.json');
+    applicationVersion = getPackageVersion(path.join(__dirname, '../../package.json'));
   }
   
-  projectDirectory = (options.projectDirectory === undefined ? "" : options.projectDirectory);
-  
-  defaultErrorHash.notifier.version = getPackageVersion(__dirname + '/package.json')
+  projectDirectory = (options.projectDirectory === undefined ? path.join(__dirname, "../..") : options.projectDirectory);
+  console.log(projectDirectory)
+  defaultErrorHash.notifier.version = getPackageVersion(path.join(__dirname,'package.json'))
 }
 
+// Set a lambda function to detail the context of the call
 exports.setContext = function(lambda) {
   contextLambda = lambda
 }
 
+// Set a lambda function to detail the user affected
 exports.setUserId = function(lambda) {
   userIdLambda = lambda;
 }
 
+// Set a lambda function to detail what happens once an uncaught exception is processed. Defaults to exit(1)
 exports.setUncaughtExceptionHandler = function(lambda) {
   onUncaughtException = lambda;
 }
 
+// Set the application version
 exports.setApplicationVersion = function(version) {
   applicationVersion = version;
-}
-
-getPackageVersion = function(packageJSON) {
-  try {
-    contents = fs.readFileSync(packageJSON, 'UTF-8');
-  } catch(e) {
-    return "unknown";
-  }
-  packageInfo = JSON.parse(contents);
-  return packageInfo.version;
 }
