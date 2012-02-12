@@ -1,6 +1,6 @@
 # Bugsnag Node Plugin
 
-Node.js client for [bugsnag.com][Bugsnag].
+Node.js client for [bugsnag.com][].
 
 ## Install
 
@@ -50,5 +50,7 @@ you would prefer different functionality, you can change this behavior by passin
 This function will be run after bugsnag has notified bugsnag.com and the exception has been processed.
 
 ``` javascript
-bugsnag.setUncaughtExceptionHandler(function(){exit(1);})
+bugsnag.setUncaughtExceptionHandler(function(){
+  exit(1);
+});
 ```
