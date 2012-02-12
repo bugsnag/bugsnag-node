@@ -1,6 +1,6 @@
 # Bugsnag Node Plugin
 
-Node.js client for [bugsnag.com][].
+Node.js client for [bugsnag](http://www.bugsnag.com).
 
 ## Install
 
