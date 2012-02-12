@@ -1,3 +1,5 @@
+//TODO: The set user id and set context functions wont be scoped to each request in express.js for example.
+
 trace = require('tracejs').trace;
 http = require('http');
 fs = require('fs');
@@ -17,13 +19,9 @@ var contextLambda;
 var projectDirectory;
 var applicationVersion = "unknown";
 var onUncaughtException = function(err) {
-  exit(1);
+  console.log(err);
+  process.exit(1);
 }
-
-process.on('uncaughtException', function(err) {
-  exports.notify(err);
-  onUncaughtException();
-});
 
 getPackageVersion = function(packageJSON) {
   try {
@@ -35,6 +33,13 @@ getPackageVersion = function(packageJSON) {
   return packageInfo.version;
 }
 
+exports.handleExceptions = function() {
+  process.on('uncaughtException', function(err) {
+    exports.notify(err);
+    onUncaughtException(err);
+  });
+}
+
 // Send a test notification
 exports.testNotification = function() {
   exports.notify(new Error("Test error "));
@@ -42,15 +47,19 @@ exports.testNotification = function() {
 
 // Notify about a caught error
 exports.notify = function(error) {
+  if(defaultErrorHash.apiKey == "") {
+    console.log("Bugsnag: No apiKey set - not notifying.");
+    return;
+  } else {
+    console.log("Bugnsag: Notifying bugsnag of error");
+  }
   var stacktrace = trace(error);
   var errorList = [{
     userId: userIdLambda(),
     appVersion: applicationVersion,
     releaseStage: releaseStage,
     metaData: {
-      environment: {
-        memoryUsage: process.memoryUsage()
-      }
+      environment: process.env
     },
     exceptions: [{
       errorClass: "Error",
@@ -58,6 +67,7 @@ exports.notify = function(error) {
       stacktrace: []
     }]
   }];
+  errorList[0].metadata.environment.memoryUsage = process.memoryUsage();
   
   for(var i = 0, len = stacktrace.frames.length; i < len; ++i) {
     errorList[0].exceptions[0].stacktrace[i] = {
@@ -115,7 +125,6 @@ exports.register = function(apiKey, options) {
   }
   
   projectDirectory = (options.projectDirectory === undefined ? path.join(__dirname, "../..") : options.projectDirectory);
-  console.log(projectDirectory)
   defaultErrorHash.notifier.version = getPackageVersion(path.join(__dirname,'package.json'))
 }
 
