@@ -62,8 +62,8 @@ exports.notify = function(error) {
       environment: process.env
     },
     exceptions: [{
-      errorClass: "Error",
-      message: stacktrace.first_line,
+      errorClass: stacktrace.first_line.split(": ")[0],
+      message: stacktrace.first_line.split(": ")[1],
       stacktrace: []
     }]
   }];
