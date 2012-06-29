@@ -1,7 +1,6 @@
-//TODO: The set user id and set context functions wont be scoped to each request in express.js for example.
-
 trace = require('tracejs').trace;
 http = require('http');
+https = require('https')
 fs = require('fs');
 path = require('path');
 
@@ -14,13 +13,50 @@ var defaultErrorHash = {
   }
 }
 var releaseStage;
-var userIdLambda;
-var contextLambda;
 var projectDirectory;
-var applicationVersion = "unknown";
+var appVersion;
+var notifyReleaseStages;
+var autoNotify;
+var enableSSL;
+
 var onUncaughtException = function(err) {
   console.log(err);
   process.exit(1);
+}
+
+// Set a lambda function to detail what happens once an uncaught exception is processed. Defaults to exit(1)
+exports.setUncaughtExceptionHandler = function(lambda) {
+  onUncaughtException = lambda;
+}
+
+// Register to process uncaught exceptions properly
+exports.register = function(apiKey, options) {
+  options = (options === undefined ? {} : options)
+  
+  Error.stackTraceLimit = Infinity;
+  defaultErrorHash.apiKey = apiKey;
+  releaseStage = (options.releaseStage === undefined ? "production" : options.releaseStage);
+  appVersion = (options.appVersion === undefined ? undefined : options.appVersion);
+  autoNotify = (options.autoNotify === undefined ? true : options.autoNotify);
+  notifyReleaseStages = (options.notifyReleaseStages === undefined ? ["production"] : options.notifyReleaseStages);
+  enableSSL = (options.enableSSL === undefined ? undefined : options.enableSSL);
+  
+  if ( options.packageJSON !== undefined ) {
+    appVersion = getPackageVersion(options.packageJSON);
+  }
+  if( appVersion === undefined || appVersion == "unknown" ) {
+    appVersion = getPackageVersion(path.join(__dirname, '../../package.json'));
+  }
+  
+  projectDirectory = (options.projectDirectory === undefined ? path.join(__dirname, "../..") : options.projectDirectory);
+  defaultErrorHash.notifier.version = getPackageVersion(path.join(__dirname,'package.json'));
+  
+  if(autoNotify) {
+    process.on('uncaughtException', function(err) {
+      exports.notify(err);
+      onUncaughtException(err);
+    });
+  }
 }
 
 getPackageVersion = function(packageJSON) {
@@ -33,13 +69,6 @@ getPackageVersion = function(packageJSON) {
   return packageInfo.version;
 }
 
-exports.handleExceptions = function() {
-  process.on('uncaughtException', function(err) {
-    exports.notify(err);
-    onUncaughtException(err);
-  });
-}
-
 // Send a test notification
 exports.testNotification = function() {
   exports.notify(new Error("Test error "));
@@ -50,13 +79,14 @@ exports.notify = function(error) {
   if(defaultErrorHash.apiKey == "") {
     console.log("Bugsnag: No apiKey set - not notifying.");
     return;
-  } else {
-    console.log("Bugnsag: Notifying bugsnag of error");
   }
+  if(typeof error == 'string') {
+    error = new Error(error);
+  }
+  
   var stacktrace = trace(error);
   var errorList = [{
-    userId: userIdLambda(),
-    appVersion: applicationVersion,
+    appVersion: appVersion,
     releaseStage: releaseStage,
     metaData: {
       environment: process.env
@@ -67,7 +97,7 @@ exports.notify = function(error) {
       stacktrace: []
     }]
   }];
-  errorList[0].metadata.environment.memoryUsage = process.memoryUsage();
+  errorList[0].metaData.environment.memoryUsage = process.memoryUsage();
   
   for(var i = 0, len = stacktrace.frames.length; i < len; ++i) {
     errorList[0].exceptions[0].stacktrace[i] = {
@@ -83,67 +113,28 @@ exports.notify = function(error) {
       errorList[0].exceptions[0].stacktrace[i].file = stacktrace.frames[i].filename.substr(projectDirectory.length + 1);
     }
   }
-  
-  if ( contextLambda !== undefined ) {
-    errorList[0].context = contextLambda();
-  }
-  
+
   defaultErrorHash.errors = errorList;
   
   var payload = JSON.stringify(defaultErrorHash);
+  var port = enableSSL ? 443 : 80;
   var options = {
-    host: 'api.bugsnag.com',
-    port: 8000,
-    path: '/notify',
+    host: 'notify.bugsnag.com',
+    port: port,
+    path: '/',
     method: 'POST',
     headers: {
       "Content-Type": 'application/json',
       "Content-Length": payload.length
     }
   };
-
-  var req = http.request(options, function(response) {});
+  
+  var req;
+  if(enableSSL) {
+    req = https.request(options, function(response) {});
+  } else {
+    req = http.request(options, function(response) {});
+  }
   req.write(payload, 'utf8');
   req.end();
-}
-
-// Register to process uncaught exceptions properly
-exports.register = function(apiKey, options) {
-  options = (options === undefined ? {} : options)
-  
-  Error.stackTraceLimit = Infinity;
-  defaultErrorHash.apiKey = apiKey;
-  releaseStage = (options.releaseStage === undefined ? "release" : options.releaseStage);
-  contextLambda = (options.context === undefined ? undefined : options.context);
-  userIdLambda = (options.userId === undefined ? function() {return "unknown";} : options.userId);
-  applicationVersion = (options.applicationVersion === undefined ? undefined : options.applicationVersion);
-  if ( options.packageJSON !== undefined ) {
-    applicationVersion = getPackageVersion(options.packageJSON);
-  }
-  if( applicationVersion === undefined || applicationVersion == "unknown" ) {
-    applicationVersion = getPackageVersion(path.join(__dirname, '../../package.json'));
-  }
-  
-  projectDirectory = (options.projectDirectory === undefined ? path.join(__dirname, "../..") : options.projectDirectory);
-  defaultErrorHash.notifier.version = getPackageVersion(path.join(__dirname,'package.json'))
-}
-
-// Set a lambda function to detail the context of the call
-exports.setContext = function(lambda) {
-  contextLambda = lambda
-}
-
-// Set a lambda function to detail the user affected
-exports.setUserId = function(lambda) {
-  userIdLambda = lambda;
-}
-
-// Set a lambda function to detail what happens once an uncaught exception is processed. Defaults to exit(1)
-exports.setUncaughtExceptionHandler = function(lambda) {
-  onUncaughtException = lambda;
-}
-
-// Set the application version
-exports.setApplicationVersion = function(version) {
-  applicationVersion = version;
 }
