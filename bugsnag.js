@@ -71,7 +71,20 @@ getPackageVersion = function(packageJSON) {
 
 // Send a test notification
 exports.testNotification = function() {
-  exports.notify(new Error("Test error "));
+  exports.notify(new Error("Test error"));
+}
+
+exports.notifyWithClass = function(errorClass, error) {
+  var errorMessage;
+  if(typeof error == 'string') {
+    errorMessage = error;
+    error = new Error(error);
+  } else {
+    errorMessage = stacktrace.first_line.split(": ")[1]
+  }
+  
+  var stacktrace = trace(error);
+  notifyError(errorClass, errorMessage, stacktrace);
 }
 
 // Notify about a caught error
@@ -85,6 +98,13 @@ exports.notify = function(error) {
   }
   
   var stacktrace = trace(error);
+  errorClass = stacktrace.first_line.split(": ")[0];
+  errorMessage = stacktrace.first_line.split(": ")[1];
+  
+  notifyError(errorClass, errorMessage, stacktrace);
+}
+
+notifyError = function(errorClass, errorMessage, stacktrace) {
   var errorList = [{
     appVersion: appVersion,
     releaseStage: releaseStage,
@@ -92,12 +112,12 @@ exports.notify = function(error) {
       environment: process.env
     },
     exceptions: [{
-      errorClass: stacktrace.first_line.split(": ")[0],
-      message: stacktrace.first_line.split(": ")[1],
+      errorClass: errorClass,
+      message: errorMessage,
       stacktrace: []
     }]
   }];
-  errorList[0].metaData.environment.memoryUsage = process.memoryUsage();
+  errorList[0].metaData.environment.memoryUsage = JSON.stringify(process.memoryUsage());
   
   for(var i = 0, len = stacktrace.frames.length; i < len; ++i) {
     errorList[0].exceptions[0].stacktrace[i] = {
