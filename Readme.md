@@ -2,7 +2,7 @@ Official Bugsnag Notifier for Node.js
 =====================================
 
 The Bugsnag Notifier for Node.js is designed to give you
-instant notification of errors from your Node.js applications. 
+instant notification of exceptions from your Node.js applications. 
 By default, the notifier hooks into `uncaughtException` event, which means any 
 uncaught exceptions will trigger a notification to be sent to your Bugsnag
 project.
@@ -11,7 +11,7 @@ project.
 What is Bugsnag?
 ----------------
 
-[Bugsnag](http://bugsnag.com) captures errors in real-time from your web, 
+[Bugsnag](http://bugsnag.com) captures exceptions in real-time from your web, 
 mobile and desktop applications, helping you to understand and resolve them 
 as fast as possible. [Create a free account](http://bugsnag.com).
 
@@ -24,7 +24,7 @@ Features
     to Bugsnag
 -   Minimal CPU and memory footprint.
 -   Track which users and urls were affected by an exception.
--   Optional integration with connect/express middleware to give your errors
+-   Optional integration with connect/express middleware to give your exceptions
     context from the request.
 -   Send additional meta-data along with your exceptions using 
     [`setExtraData`](#setextradata)
@@ -61,24 +61,20 @@ Register the bugsnag notifier.
 bugsnag.register("your-api-key-goes-here");
 ```
 
-See the ['full documentation'](#register) for the register function below.
+See the full documentation for the [register](#register) function for more details.
 
 
 Using Express or Connect Middleware
 -----------------------------------------
 
-In order to have bugsnag report on any errors in your express
-or connect app, you need to configure bugsnag to handle errors
+In order to have bugsnag report on any exceptions in your express
+or connect app, you need to configure bugsnag to handle exceptions
 from within those libraries. In order to do that, simply pass
 the bugsnag register call into app.use().
 
 ```javascript
 app.use(bugsnag.register("your-api-key-goes-here"))
 ```
-
-**Note:** Please pay attention to the order of your middleware
-calls. Bugsnag's error middleware should ideally be the first
-middleware run after the request has been processed.
 
 
 Send Non-Fatal Exceptions to Bugsnag
@@ -94,12 +90,12 @@ bugsnag.notify(new Error("Non-fatal"));
 You can also send additional meta-data with your exception:
 
 ```javascript
-bugsnag.notify(new Error("Non-fatal"), {username:"bob-hoskins"});
+bugsnag.notify(new Error("Non-fatal"), {extraData:{username:"bob-hoskins"}});
 ```
 
 ###Manual Error Class
 
-If you would like to set the class of error that has been raised,
+If you would like to set the class of error that has occurred,
 you can call the `notifyWithClass` method:
 
 ```javascript
@@ -110,7 +106,7 @@ bugsnag.notifyWithClass("RuntimeError", new Error("Non-fatal"));
 Register
 -------------
 
-The bugsnag.register takes an optional second parameter, containing a Hash of
+The bugsnag.register takes an optional second parameter, containing an object of
 options. The options can be a combination of any of the following.
 
 ###releaseStage
@@ -153,42 +149,43 @@ bugsnag.register("your-api-key-goes-here",{autoNotify:false});
 
 ###notifyReleaseStages
 
-By default the notifier will only notify bugsnag of production errors. If you wish to be notified
-about development errors, then you can set the notifyReleaseStages option.
+By default the notifier will only notify bugsnag of production exceptions. If you wish to be notified
+about development exceptions, then you can set the notifyReleaseStages option.
 
 ```javascript
 bugsnag.register("your-api-key-goes-here",{notifyReleaseStages:["development", "production"]});
 ```
 
-###enableSSL
+###useSSL
 
-Bugsnag supports the SSL encryption of error reports. If you require this level of security, you can
+Bugsnag supports the SSL encryption of exception reports. If you require this level of security, you can
 enable SSL support within the notifier.
 
 ```javascript
-bugsnag.register("your-api-key-goes-here",{enableSSL:true});
+bugsnag.register("your-api-key-goes-here",{useSSL:true});
 ```
 
-###projectDirectory
+###projectRoot
 
 Bugsnag highlights stacktrace lines that are in your project for you, and automatically hides code that 
 is in third party libraries. If bugsnag is not hiding stacktrace lines in third party libraries, it is
-likely that the projectDirectory is being incorrectly calculated. You can set it when calling register to
+likely that the projectRoot is being incorrectly calculated. You can set it when calling register to
 a path relative to the bugsnag.js file or an absolute path.
 
 ```javascript
-bugsnag.register("your-api-key-goes-here",{projectDirectory:"../../../"});
+bugsnag.register("your-api-key-goes-here",{projectRoot:"../../../"});
 ```
+
 
 Notify
 -------------
 
-Both `notify` and `notifyWithClass` take an optional final hash parameter that provides bugsnag with more
-information as to what was happening in the node script when the error occurred.
+Both `notify` and `notifyWithClass` take an optional final object parameter that provides bugsnag with more
+information as to what was happening in the node script when the exception occurred.
 
 ###context
 
-Bugsnag will use any context passed into the notify method when notifying bugsnag of the error. You can
+Bugsnag will use any context passed into the notify method when notifying bugsnag of the exception. You can
 set this option to any string value, and you will be able to see the context aggregated in the web dashboard.
 
 ```javascript
@@ -197,7 +194,7 @@ bugsnag.notify(new Error("Something went badly wrong"), {context:"/users/new"});
 
 ###userId
 
-Bugsnag will use any userId passed into the notify method when notifying bugsnag of the error. You can
+Bugsnag will use any userId passed into the notify method when notifying bugsnag of the exception. You can
 set this option to any string value and bugsnag will use that to count users affected.
 
 ```javascript
@@ -213,6 +210,15 @@ if you pass that in to the notify method.
 bugsnag.notify(new Error("Something went badly wrong"), {req: req});
 ```
 
+###extraData
+
+Bugsnag can also send any extra data you want to be sent along with the exception report to bugsnag. To
+do this just set the extraData option to an object containing the information you want to send.
+
+```javascript
+bugsnag.notify(new Error("Something went badly wrong"), {extraData: {username:"bob-hoskins"}});
+```
+
 
 Configuration
 -------------
@@ -220,8 +226,8 @@ Configuration
 ###setContext
 
 Bugsnag uses the concept of "contexts" to help display and group your
-errors. Contexts represent what was happening in your application at the
-time an error occurs. In a network based node app, this would typically
+exceptions. Contexts represent what was happening in your application at the
+time an exception occurs. In a network based node app, this would typically
 be the URL requested. If you provide access to the node.js request object, 
 bugsnag will use the URL for you.
 
@@ -238,7 +244,7 @@ bugsnag.notifyWithClass.
 ###setUserId
 
 Bugsnag helps you understand how many of your users are affected by each
-error. In order to do this, we send along a userId with every exception. 
+exception. In order to do this, we send along a userId with every exception. 
 If you provide access to the node.js request object, bugsnag will use the
 remote IP address to identify the user.
     
@@ -259,7 +265,7 @@ data along with every exception. To do this, you can call the
 `setExtraData` method:
     
 ```javascript
-bugsnag.setExtraData({username: bob-hoskins});
+bugsnag.setExtraData({username: "bob-hoskins"});
 ```
 
 

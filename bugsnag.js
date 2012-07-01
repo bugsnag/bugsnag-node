@@ -13,11 +13,11 @@ var defaultErrorHash = {
   }
 }
 var releaseStage;
-var projectDirectory;
+var projectRoot;
 var appVersion;
 var notifyReleaseStages;
 var autoNotify;
-var enableSSL;
+var useSSL;
 var userId;
 var context;
 var extraData;
@@ -59,16 +59,20 @@ exports.register = function(apiKey, options) {
   appVersion = (options.appVersion === undefined ? undefined : options.appVersion);
   autoNotify = (options.autoNotify === undefined ? true : options.autoNotify);
   notifyReleaseStages = (options.notifyReleaseStages === undefined ? ["production"] : options.notifyReleaseStages);
-  enableSSL = (options.enableSSL === undefined ? false : options.enableSSL);
+  useSSL = (options.useSSL === undefined ? false : options.useSSL);
   
   if ( options.packageJSON !== undefined ) {
-    appVersion = getPackageVersion(options.packageJSON);
+    appVersion = options.packageJSON.indexOf(path.sep) == 0 ? getPackageVersion(options.packageJSON) : getPackageVersion(path.join(__dirname,options.packageJSON));
   }
   if( appVersion === undefined || appVersion == "unknown" ) {
-    appVersion = getPackageVersion(path.join(__dirname, '../../package.json'));
+    appVersion = getPackageVersion(path.join(__dirname, '..' + path.sep + '..' + path.sep + 'package.json'));
   }
   
-  projectDirectory = (options.projectDirectory === undefined ? path.join(__dirname, "../..") : options.projectDirectory);
+  if(options.projectRoot === undefined) {
+    projectRoot = path.join(__dirname, ".." + path.sep + "..")
+  } else {
+    projectRoot = options.projectRoot.indexOf(path.sep) == 0 ? options.projectRoot : path.join(__dirname, options.projectRoot);
+  }
   defaultErrorHash.notifier.version = getPackageVersion(path.join(__dirname,'package.json'));
   
   if(autoNotify) {
@@ -215,7 +219,10 @@ notifyError = function(errorClass, errorMessage, stacktrace, passedUserId, passe
   var errorList = [{
     appVersion: appVersion,
     releaseStage: releaseStage,
-    metaData: extraData,
+    metaData: {
+      customData: extraData,
+      environment: {}
+    },
     exceptions: [{
       errorClass: errorClass,
       message: errorMessage,
@@ -231,7 +238,6 @@ notifyError = function(errorClass, errorMessage, stacktrace, passedUserId, passe
   }
 
   var memUsage = process.memoryUsage();
-  errorList[0].metaData.environment = {};
   errorList[0].metaData.environment.memoryUsage = { total: memUsage.heapTotal, used: memUsage.heapUsed };
   
   for(var i = 0, len = stacktrace.frames.length; i < len; ++i) {
@@ -240,19 +246,19 @@ notifyError = function(errorClass, errorMessage, stacktrace, passedUserId, passe
       lineNumber: stacktrace.frames[i].line,
       method: stacktrace.frames[i].named_location
     }
-    if( projectDirectory != "" && 
-        stacktrace.frames[i].filename.indexOf(projectDirectory) == 0) {
+    if( projectRoot != "" && 
+        stacktrace.frames[i].filename.indexOf(projectRoot) == 0) {
       if ( stacktrace.frames[i].filename.indexOf("node_modules") == -1 ) {
         errorList[0].exceptions[0].stacktrace[i].inProject = true;
       }
-      errorList[0].exceptions[0].stacktrace[i].file = stacktrace.frames[i].filename.substr(projectDirectory.length + 1);
+      errorList[0].exceptions[0].stacktrace[i].file = stacktrace.frames[i].filename.substr(projectRoot.length + 1);
     }
   }
 
   defaultErrorHash.errors = errorList;
   var payload = JSON.stringify(defaultErrorHash);
   
-  var port = enableSSL ? 443 : 80;
+  var port = useSSL ? 443 : 80;
   var options = {
     host: 'notify.bugsnag.com',
     port: port,
@@ -265,7 +271,7 @@ notifyError = function(errorClass, errorMessage, stacktrace, passedUserId, passe
   };
   
   var req;
-  if(enableSSL) {
+  if(useSSL) {
     req = https.request(options, function(response) {});
   } else {
     req = http.request(options, function(response) {});
