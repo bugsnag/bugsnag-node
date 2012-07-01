@@ -21,6 +21,7 @@ var enableSSL;
 var userId;
 var context;
 var extraData;
+var filters = ["password"];
 
 var onUncaughtException = function(err) {
   console.log(err);
@@ -39,6 +40,10 @@ exports.setExtraData = function(passedExtraData) {
   extraData = passedExtraData;
 }
 
+exports.setFilters = function(passedFilters) {
+  filters = passedFilters;
+}
+
 // Set a lambda function to detail what happens once an uncaught exception is processed. Defaults to exit(1)
 exports.setUncaughtExceptionHandler = function(lambda) {
   onUncaughtException = lambda;
@@ -50,11 +55,11 @@ exports.register = function(apiKey, options) {
   
   Error.stackTraceLimit = Infinity;
   defaultErrorHash.apiKey = apiKey;
-  releaseStage = (options.releaseStage === undefined ? "production" : options.releaseStage);
+  releaseStage = (options.releaseStage === undefined ? (process.env.NODE_ENV === undefined ? "production" : process.env.NODE_ENV) : options.releaseStage);
   appVersion = (options.appVersion === undefined ? undefined : options.appVersion);
   autoNotify = (options.autoNotify === undefined ? true : options.autoNotify);
   notifyReleaseStages = (options.notifyReleaseStages === undefined ? ["production"] : options.notifyReleaseStages);
-  enableSSL = (options.enableSSL === undefined ? undefined : options.enableSSL);
+  enableSSL = (options.enableSSL === undefined ? false : options.enableSSL);
   
   if ( options.packageJSON !== undefined ) {
     appVersion = getPackageVersion(options.packageJSON);
@@ -90,6 +95,8 @@ getUserIdFromOptions = function(options) {
   var localUserId = null;
   if(options.userId !== undefined && options.userId != null) {
     localUserId = options.userId
+  } else if(userId !== undefined && userId != null) {
+    localUserId = userId;
   } else if(options.req !== undefined && options.req != null){
     localUserId = options.req.connection.remoteAddress;
     if(localUserId === undefined || localUserId == null || localUserId == "127.0.0.1") {
@@ -101,9 +108,6 @@ getUserIdFromOptions = function(options) {
       }catch(e){}
     }
   }
-  if(localUserId === undefined || localUserId == null) {
-    localUserId = userId;
-  }
   return localUserId;
 }
 
@@ -111,10 +115,10 @@ getContextFromOptions = function(options) {
   var localContext = null;
   if(options.context !== undefined && options.context != null) {
     localContext = options.context;
+  } else if(context !== undefined && context != null) {
+    localContext = context;
   } else if(options.req !== undefined && options.req != null) {
     localContext = options.req.url;
-  } else {
-    localContext = context;
   }
   return localContext;
 }
@@ -148,6 +152,14 @@ getExtraDataFromOptions = function(options) {
     requestHash["connection"] = connectionHash;
     extraData["request"] = requestHash;
   }
+  
+  var extraDataKeys = Object.keys(extraData);
+  for(var key in extraDataKeys) {
+    if(filters.indexOf(key) != -1) {
+      extraData[key] = undefined;
+    }
+  }
+  
   return extraData;
 }
 
