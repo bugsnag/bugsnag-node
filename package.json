@@ -2,7 +2,7 @@
   "name": "bugsnag",
   "description": "Bugsnag notifier for node.js scripts",
   "version": "0.1.8",
-  "main": "./bugsnag.js",
+  "main": "./lib/bugsnag.js",
   "homepage": "http://bugsnag.com",
   "dependencies": {
     "tracejs": ">=0.1.0"
