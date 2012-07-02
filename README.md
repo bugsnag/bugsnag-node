@@ -1,35 +1,16 @@
-Official Bugsnag Notifier for Node.js
-=====================================
+Bugsnag Notifier for Node.js
+============================
 
-The Bugsnag Notifier for Node.js is designed to give you
-instant notification of exceptions from your Node.js applications. 
+The Bugsnag Notifier for Node.js gives you instant notification of exceptions
+from your Node.js applications. 
 By default, the notifier hooks into `uncaughtException` event, which means any 
 uncaught exceptions will trigger a notification to be sent to your Bugsnag
 project.
 
-
-What is Bugsnag?
-----------------
-
-[Bugsnag](http://bugsnag.com) captures exceptions in real-time from your web, 
+[Bugsnag](http://bugsnag.com) captures errors in real-time from your web, 
 mobile and desktop applications, helping you to understand and resolve them 
-as fast as possible. [Create a free account](http://bugsnag.com).
-
-
-Features
---------
-
--   Automatic notification of uncaught exceptions
--   Send your own [non-fatal exceptions](#send-non-fatal-exceptions-to-bugsnag)
-    to Bugsnag
--   Minimal CPU and memory footprint.
--   Track which users and urls were affected by an exception.
--   Optional integration with connect/express middleware to give your exceptions
-    context from the request.
--   Send additional meta-data along with your exceptions using 
-    [`setExtraData`](#setextradata)
--   Filter sensitive data before sending exceptions with
-    [`setFilters`](#setfilters)
+as fast as possible. [Create a free account](http://bugsnag.com) to start 
+capturing exceptions from your applications.
 
 
 Installation & Setup
@@ -65,7 +46,7 @@ See the full documentation for the [register](#register) function for more detai
 
 
 Using Express or Connect Middleware
------------------------------------------
+-----------------------------------
 
 In order to have bugsnag report on any exceptions in your express
 or connect app, you need to configure bugsnag to handle exceptions
@@ -280,21 +261,15 @@ project here:
 
 Contributing
 ------------
- 
--   Check out the latest master to make sure the feature hasn't been 
-    implemented or the bug hasn't been fixed yet
--   Check out the issue tracker to make sure someone already hasn't requested
-    it and/or contributed it
--   Fork the project
--   Start a feature/bugfix branch
+
+-   [Fork](https://help.github.com/articles/fork-a-repo) the [notifier on github](https://github.com/bugsnag/bugsnag-node)
 -   Commit and push until you are happy with your contribution
+-   [Make a pull request](https://help.github.com/articles/using-pull-requests)
 -   Thanks!
 
 
 License
 -------
 
-The Bugsnag node.js notifier is released under the 
-MIT License. Read the full license here:
-
-<https://github.com/bugsnag/bugsnag-node/blob/master/LICENSE>
+The Bugsnag Node.js notifier is free software released under the MIT License. 
+See [LICENSE.txt](https://github.com/bugsnag/bugsnag-node/blob/master/LICENSE.txt) for details.
