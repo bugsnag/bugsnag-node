@@ -61,18 +61,22 @@ exports.register = function(apiKey, options) {
   notifyReleaseStages = (options.notifyReleaseStages === undefined ? ["production"] : options.notifyReleaseStages);
   useSSL = (options.useSSL === undefined ? false : options.useSSL);
   
+  if(options.projectRoot === undefined) {
+    projectRoot = path.dirname(require.main.filename);
+  } else {
+    projectRoot = options.projectRoot.indexOf(path.sep) == 0 ? options.projectRoot : path.join(__dirname, options.projectRoot);
+  }
+  
   if ( options.packageJSON !== undefined ) {
     appVersion = options.packageJSON.indexOf(path.sep) == 0 ? getPackageVersion(options.packageJSON) : getPackageVersion(path.join(__dirname,options.packageJSON));
   }
   if( appVersion === undefined || appVersion == "unknown" ) {
-    appVersion = getPackageVersion(path.join(__dirname, '..' + path.sep + '..' + path.sep + 'package.json'));
+    appVersion = getPackageVersion(path.join(path.dirname(require.main.filename),'package.json'));
+    if(appVersion === undefined || appVersion == "unknown") {
+      appVersion = getPackageVersion(path.join(projectRoot,'package.json'));
+    }
   }
   
-  if(options.projectRoot === undefined) {
-    projectRoot = path.join(__dirname, ".." + path.sep + "..")
-  } else {
-    projectRoot = options.projectRoot.indexOf(path.sep) == 0 ? options.projectRoot : path.join(__dirname, options.projectRoot);
-  }
   defaultErrorHash.notifier.version = getPackageVersion(path.join(__dirname,'package.json'));
   
   if(autoNotify) {
@@ -136,14 +140,14 @@ getExtraDataFromOptions = function(options) {
   } else {
     localExtraData = {};
   }
-  
+
   if(options.req !== undefined && options.req != null) {
     var requestHash = {};
     requestHash["url"] = options.req.url;
     requestHash["method"] = options.req.method;
     requestHash["headers"] = options.req.headers;
     requestHash["httpVersion"] = options.req.httpVersion;
-    
+
     var connectionHash = {}
     connectionHash["remoteAddress"] = options.req.connection.remoteAddress;
     connectionHash["remotePort"] = options.req.connection.remotePort;
@@ -152,19 +156,19 @@ getExtraDataFromOptions = function(options) {
     connectionHash["localPort"] = options.req.connection.address()["port"];
     connectionHash["localAddress"] = options.req.connection.address()["address"];
     connectionHash["IPVersion"] = options.req.connection.address()["family"];
-    
+
     requestHash["connection"] = connectionHash;
-    extraData["request"] = requestHash;
+    localExtraData["request"] = requestHash;
   }
   
-  var extraDataKeys = Object.keys(extraData);
+  var extraDataKeys = Object.keys(localExtraData);
   for(var key in extraDataKeys) {
     if(filters.indexOf(key) != -1) {
-      extraData[key] = undefined;
+      localExtraData[key] = undefined;
     }
   }
-  
-  return extraData;
+
+  return localExtraData;
 }
 
 // Send a test error
@@ -183,14 +187,17 @@ exports.notifyWithClass = function(errorClass, error, options) {
   options = (options === undefined ? {} : options)
 
   var errorMessage;
+  var stacktrace;
   if(typeof error == 'string') {
     errorMessage = error;
-    error = new Error(error);
+    var stack = {}
+    Error.captureStackTrace(stack,arguments.callee);
+    stacktrace = trace(stack);
   } else {
+    stacktrace = trace(error);
     errorMessage = stacktrace.first_line.split(": ")[1]
   }
   
-  var stacktrace = trace(error);
   notifyError(errorClass, errorMessage, stacktrace, getUserIdFromOptions(options), getContextFromOptions(options), getExtraDataFromOptions(options));
 }
 
@@ -198,13 +205,21 @@ exports.notifyWithClass = function(errorClass, error, options) {
 exports.notify = function(error, options) {
   options = (options === undefined ? {} : options)
   
+  var errorClass;
+  var errorMessage;
+  var stacktrace;
+  
   if(typeof error == 'string') {
-    error = new Error(error);
+    errorClass = "Error";
+    errorMessage = error;
+    var stack = {}
+    Error.captureStackTrace(stack,arguments.callee);
+    stacktrace = trace(stack);
+  } else {
+    stacktrace = trace(error);
+    errorClass = stacktrace.first_line.split(": ")[0];
+    errorMessage = stacktrace.first_line.split(": ")[1]
   }
-
-  var stacktrace = trace(error);
-  errorClass = stacktrace.first_line.split(": ")[0];
-  errorMessage = stacktrace.first_line.split(": ")[1];
   
   notifyError(errorClass, errorMessage, stacktrace, getUserIdFromOptions(options), getContextFromOptions(options), getExtraDataFromOptions(options));
 }

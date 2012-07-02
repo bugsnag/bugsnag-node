@@ -129,10 +129,22 @@ into register to set your own custom version.
 bugsnag.register("your-api-key-goes-here",{appVersion:"1.0.0"});
 ```
 
+###projectRoot
+
+Bugsnag highlights stacktrace lines that are in your project for you, and automatically hides code that 
+is in third party libraries. If bugsnag is not hiding stacktrace lines in third party libraries, it is
+likely that the projectRoot is being incorrectly calculated. You can set it when calling register to
+a path relative to the bugsnag.js file or an absolute path.
+
+```javascript
+bugsnag.register("your-api-key-goes-here",{projectRoot:"../../../"});
+```
+
 ###packageJSON
 
 If the bugsnag notifier is unable to locate your package JSON file, you can pass in either a fully
 qualified path, or a path relative to the location of the bugsnag.js file to the register method.
+If your package.json file is in your project root, this is usually unnecessary.
 
 ```javascript
 bugsnag.register("your-api-key-goes-here",{packageJSON:"../../../package.json"});
@@ -163,17 +175,6 @@ enable SSL support within the notifier.
 
 ```javascript
 bugsnag.register("your-api-key-goes-here",{useSSL:true});
-```
-
-###projectRoot
-
-Bugsnag highlights stacktrace lines that are in your project for you, and automatically hides code that 
-is in third party libraries. If bugsnag is not hiding stacktrace lines in third party libraries, it is
-likely that the projectRoot is being incorrectly calculated. You can set it when calling register to
-a path relative to the bugsnag.js file or an absolute path.
-
-```javascript
-bugsnag.register("your-api-key-goes-here",{projectRoot:"../../../"});
 ```
 
 
