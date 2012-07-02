@@ -131,14 +131,21 @@ getContextFromOptions = function(options) {
   return localContext;
 }
 
-getExtraDataFromOptions = function(options) {
-  var localExtraData = null;
+getMetaDataFromOptions = function(options) {
+  var localMetaData = {};
   if(options.extraData !== undefined && options.extraData != null) {
-    localExtraData = options.extraData;
+    localMetaData["customData"] = options.extraData;
   } else if(extraData !== undefined && extraData != null) {
-    localExtraData = extraData;
-  } else {
-    localExtraData = {};
+    localMetaData["customData"] = extraData;
+  }
+  
+  if(localMetaData["customData"] !== undefined && localMetaData["customData"] != null) {
+    var metaDataKeys = Object.keys(localMetaData["customData"]);
+    for(var key in metaDataKeys) {
+      if(filters.indexOf(key) != -1) {
+        localMetaData[key] = undefined;
+      }
+    }
   }
 
   if(options.req !== undefined && options.req != null) {
@@ -158,17 +165,10 @@ getExtraDataFromOptions = function(options) {
     connectionHash["IPVersion"] = options.req.connection.address()["family"];
 
     requestHash["connection"] = connectionHash;
-    localExtraData["request"] = requestHash;
-  }
-  
-  var extraDataKeys = Object.keys(localExtraData);
-  for(var key in extraDataKeys) {
-    if(filters.indexOf(key) != -1) {
-      localExtraData[key] = undefined;
-    }
+    localMetaData["request"] = requestHash;
   }
 
-  return localExtraData;
+  return localMetaData;
 }
 
 // Send a test error
@@ -198,7 +198,7 @@ exports.notifyWithClass = function(errorClass, error, options) {
     errorMessage = stacktrace.first_line.split(": ")[1]
   }
   
-  notifyError(errorClass, errorMessage, stacktrace, getUserIdFromOptions(options), getContextFromOptions(options), getExtraDataFromOptions(options));
+  notifyError(errorClass, errorMessage, stacktrace, getUserIdFromOptions(options), getContextFromOptions(options), getMetaDataFromOptions(options));
 }
 
 // Notify about a caught error
@@ -221,23 +221,20 @@ exports.notify = function(error, options) {
     errorMessage = stacktrace.first_line.split(": ")[1]
   }
   
-  notifyError(errorClass, errorMessage, stacktrace, getUserIdFromOptions(options), getContextFromOptions(options), getExtraDataFromOptions(options));
+  notifyError(errorClass, errorMessage, stacktrace, getUserIdFromOptions(options), getContextFromOptions(options), getMetaDataFromOptions(options));
 }
 
-notifyError = function(errorClass, errorMessage, stacktrace, passedUserId, passedContext, extraData) {
+notifyError = function(errorClass, errorMessage, stacktrace, passedUserId, passedContext, metaData) {
   if(defaultErrorHash.apiKey == "") {
     console.log("Bugsnag: No apiKey set - not notifying.");
     return;
   }
   
-  extraData = (extraData === undefined ? {} : extraData)
+  metaData = (metaData === undefined ? {} : metaData)
   var errorList = [{
     appVersion: appVersion,
     releaseStage: releaseStage,
-    metaData: {
-      customData: extraData,
-      environment: {}
-    },
+    metaData: metaData,
     exceptions: [{
       errorClass: errorClass,
       message: errorMessage,
@@ -253,6 +250,7 @@ notifyError = function(errorClass, errorMessage, stacktrace, passedUserId, passe
   }
 
   var memUsage = process.memoryUsage();
+  errorList[0].metaData.environment = errorList[0].metaData.environment || {};
   errorList[0].metaData.environment.memoryUsage = { total: memUsage.heapTotal, used: memUsage.heapUsed };
   
   for(var i = 0, len = stacktrace.frames.length; i < len; ++i) {

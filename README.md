@@ -211,6 +211,9 @@ if you pass that in to the notify method.
 bugsnag.notify(new Error("Something went badly wrong"), {req: req});
 ```
 
+The notifier will also pull out extra information about the request to help you diagnose the exception
+if you pass the request to the notify method.
+
 ###extraData
 
 Bugsnag can also send any extra data you want to be sent along with the exception report to bugsnag. To
