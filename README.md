@@ -33,7 +33,7 @@ npm install
 Require bugsnag in your node.js script.
 
 ```javascript
-bugsnag = requre("bugsnag");
+bugsnag = require("bugsnag");
 ```
 
 Register the bugsnag notifier.
