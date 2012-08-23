@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/bugsnag/bugsnag-node.png)](http://travis-ci.org/bugsnag/bugsnag-node)
 Bugsnag Notifier for Node.js
 ============================
 
