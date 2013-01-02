@@ -141,10 +141,10 @@ bugsnag.register("your-api-key-goes-here",{notifyReleaseStages:["development", "
 
 ###useSSL
 
-Bugsnag supports the SSL encryption of exception reports. If you require this level of security, you can enable SSL support within the notifier.
+Bugsnag will automatically notify bugsnag.com of an exception using SSL. If you do not want this encryption, you can disable it here.
 
 ```javascript
-bugsnag.register("your-api-key-goes-here",{useSSL:true});
+bugsnag.register("your-api-key-goes-here",{useSSL:false});
 ```
 
 
