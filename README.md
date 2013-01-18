@@ -47,6 +47,13 @@ In order to have bugsnag report on any exceptions in your express or connect app
 app.use(bugsnag.register("your-api-key-goes-here"))
 ```
 
+Using Coffeescript
+------------------
+
+When running coffeecript code using the coffee executable, bugsnag cannot unfortunately notify about uncaught exceptions that are at the top level of your app. It will only be able to notify about those uncaught exceptions in callbacks. This is due to a [feature](https://github.com/jashkenas/coffee-script/issues/1438) of the coffee executable. 
+
+In order to get round this you can compile the coffeescript file into a javascript file by running `coffee -c filename.coffee` and then running `node filename.js` to execute your app. This is automatable if you use a [Cakefile](http://coffeescript.org/documentation/docs/cake.html).
+
 
 Send Non-Fatal Exceptions to Bugsnag
 ------------------------------------
