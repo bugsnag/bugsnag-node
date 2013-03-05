@@ -1,14 +1,22 @@
 {
   "name": "bugsnag",
   "description": "Bugsnag notifier for node.js scripts",
-  "version": "0.1.14",
-  "main": "./lib/bugsnag.js",
+  "version": "0.2.0",
+  "main": "./src/bugsnag.js",
   "homepage": "http://bugsnag.com",
   "dependencies": {
-    "tracejs": ">=0.1.0"
+    "stack-trace": ">=0.0.6"
+  },
+  "devDependencies" : {
+    "mocha": ">=1.8.0",
+    "chai": ">=1.5.0",
+    "coffee-script": "latest"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:bugsnag/bugsnag-node.git"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
