@@ -16,7 +16,7 @@ afterEach () -> deliverStub.reset()
 
 describe "Bugsnag", ->
 	describe "Notification", ->
-		it "should call notify once", ->
+		it "should call deliver once", ->
 			Bugsnag.notify("BigBadError", "This is the message")
 
 			deliverStub.calledOnce.should.equal true

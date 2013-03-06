@@ -20,9 +20,16 @@ module.exports = (grunt) ->
       options: part: "patch"
       files: ["package.json"]
 
+    mochaTest:
+      files: ["test/*.coffee"]
+    mochaTestConfig:
+      options:
+        reporter: "spec"
+
   # Load tasks from plugins
   grunt.loadNpmTasks "grunt-contrib-coffee"
   grunt.loadNpmTasks "grunt-bumpx"
+  grunt.loadNpmTasks "grunt-mocha-test"
 
   # Task to tag a version in git
   grunt.registerTask "git-tag", "Tags a release in git", ->
@@ -38,4 +45,4 @@ module.exports = (grunt) ->
   grunt.registerTask "release", ["coffee", "git-tag"]
 
   # Default meta-task
-  grunt.registerTask "default", ["coffee"]
+  grunt.registerTask "default", ["coffee", "mochaTest"]
