@@ -1,5 +1,5 @@
 should = require("chai").should()
-Utils = require "../src/utils"
+Utils = require "../lib/utils"
 
 describe "utils", ->
 	describe "typeOf", ->

@@ -77,7 +77,7 @@ module.exports = class Bugsnag
 				when "function" then cb = argument
 		options ||= {}
 
-		notifyBugsnagError new (require("./error"))(error, errorClass), options, cb
+		notifyError new (require("./error"))(error, errorClass), options, cb
 
 	@notify: (errorClass, errorMessage, options, cb) ->
 		return unless @shouldNotify
@@ -93,9 +93,9 @@ module.exports = class Bugsnag
 				when "function" then cb = argument
 		options ||= {}
 
-		notifyBugsnagError new (require("./error"))(errorMessage, errorClass), cb
+		notifyError new (require("./error"))(errorMessage, errorClass), cb
 		
-	notifyBugsnagError = (bugsnagError, options, cb) ->
+	notifyError = (bugsnagError, options, cb) ->
 		notification = new (require("./notification")) bugsnagError, options
 		notification.deliver cb
 
