@@ -48,7 +48,9 @@ module.exports = class Utils
     return dest
 
   @filterObject: (object, filters) ->
-    return unless Utils.typeOf object == "object"
+    return unless @typeOf(object) == "object"
+    return unless @typeOf(filters) == "array"
+
     Object.keys(object).forEach (key) =>
       if object.hasOwnProperty key
         filters.forEach (filter) =>

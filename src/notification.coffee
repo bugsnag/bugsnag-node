@@ -1,8 +1,6 @@
 Bugsnag = require "./bugsnag"
 Utils = require "./utils"
-
-console.log "Bugsnag"
-console.log require("util").inspect Bugsnag, true, null, true
+Logger = require("./logger")
 
 module.exports = class Notification
 	constructor: (bugsnagError, options = {}) ->
@@ -17,7 +15,7 @@ module.exports = class Notification
 
 		delete options.userId
 		delete options.context
-		@events[0].metaData = BugsnagUtils.cloneObject Bugsnag.metaData
+		@events[0].metaData = Utils.cloneObject Bugsnag.metaData
 
 		if options.req
 			@processRequest options.req
@@ -50,8 +48,12 @@ module.exports = class Notification
 	   @events[0].userId ||= req.headers["x-forwarded-for"] || req.connection?.remoteAddress
 
 	deliver: (cb) ->
+		cb = null unless Utils.typeOf(cb) == "function"
+		
 		# Filter before sending
 		Utils.filterObject(@events[0].metaData, Bugsnag.filters)
+
+		Logger.info "Delivering exception..."
 
 		payload = JSON.stringify @
 		options =
@@ -59,13 +61,26 @@ module.exports = class Notification
     	port: if Bugsnag.useSSL then 443 else 80
     	path: Bugsnag.NOTIFICATION_PATH
     	method: 'POST'
-    	headers: {
+    	headers:
       	"Content-Type": 'application/json'
       	"Content-Length": payload.length
-      }
 
-     callback = (res) ->
-     	if Utils.classToType cb == "function"
+    Logger.info payload
+
+	  if Bugsnag.useSSL
+	  	req = require("https").request(options, responseCallback(cb))
+	  else
+	  	req = require("http").request(options, responseCallback(cb))
+
+	  req.on "error", (err) -> cb e if cb
+	  req.write payload, "utf-8"
+	  req.end()
+
+	responseCallback = (cb) ->
+		cb = null unless Utils.typeOf(cb) == "function"
+
+		return (res) ->
+			if cb
      		bodyRes = ""
 
      		res.setEncoding 'utf8'

@@ -1,18 +1,16 @@
 path = require "path"
 
-Err = require "./error"
-Notification = require "./notification"
 Utils = require "./utils"
 
 Error.stackTraceLimit = Infinity
 
 module.exports = class Bugsnag
 	# Notifier Constants
-	NOTIFIER_NAME = "Bugsnag Node Notifier"
-	NOTIFIER_VERSION = Utils.getPackageVersion(path.join(__dirname, '..', 'package.json'))
-	NOTIFIER_URL = "https://github.com/bugsnag/bugsnag-node"
-	NOTIFICATION_HOST = "notify.bugsnag.com"
-	NOTIFICATION_PATH = '/'
+	@NOTIFIER_NAME = "Bugsnag Node Notifier"
+	@NOTIFIER_VERSION = Utils.getPackageVersion(path.join(__dirname, '..', 'package.json'))
+	@NOTIFIER_URL = "https://github.com/bugsnag/bugsnag-node"
+	@NOTIFICATION_HOST = "notify.bugsnag.com"
+	@NOTIFICATION_PATH = '/'
 
 	# Configuration
 	@filters: ["password"]
@@ -27,9 +25,7 @@ module.exports = class Bugsnag
 	@context: null
 	@releaseStage: process.env.NODE_ENV || "production"
 	@appVersion: null
-	@metaData: {key: "value"}
-
-	console.log require("util").inspect @, true, null, true
+	@metaData: {}
 
 	# The callback fired when we receive an uncaught exception. Defaults to printing the stack and exiting
 	@onUncaughtException: (err) ->
@@ -39,6 +35,11 @@ module.exports = class Bugsnag
 	@register: (apiKey, options = {}) ->
 		@apiKey = apiKey
 		
+		# Do this before we do any logging
+		Logger.logLevel = options.logLevel if options.logLevel
+
+		Logger.info "Registering with apiKey #{apiKey}"
+
 		@releaseStage = options.releaseStage || @releaseStage
 		@appVersion = options.appVersion || @appVersion
 		@autoNotify = if options.autoNotify? then options.autoNotify else @autoNotify
@@ -55,6 +56,7 @@ module.exports = class Bugsnag
 			@appVersion = Utils.getPackageVersion(path.join(path.dirname(require.main.filename),'package.json')) || Utils.getPackageVersion(path.join(projectRoot, 'package.json'))
 
 		if @autoNotify
+			Logger.info "Configuring uncaughtExceptionHandler"
 			process.on "uncaughtException", (err) =>
 				@notifyException err, (error, response) =>
 					console.log "Bugsnag: error notifying bugsnag.com - #{error}" if error
@@ -62,6 +64,8 @@ module.exports = class Bugsnag
 
 	@notifyException: (error, errorClass, options, cb) ->
 		return unless @shouldNotify
+
+		Logger.info "Notifying Bugsnag of exception...\n#{error?.stack || error}"
 
 		# Convert arguments into an array
 		args = Array.prototype.slice.call(arguments)
@@ -73,10 +77,12 @@ module.exports = class Bugsnag
 				when "function" then cb = argument
 		options ||= {}
 
-		notifyBugsnagError new Err(error, errorClass), options, cb
+		notifyBugsnagError new (require("./error"))(error, errorClass), options, cb
 
 	@notify: (errorClass, errorMessage, options, cb) ->
 		return unless @shouldNotify
+
+		Logger.info "Notifying Bugsnag of exception...\n#{errorClass}: #{errorMessage}"
 		
 		# Convert arguments into an array
 		args = Array.prototype.slice.call(arguments)
@@ -87,11 +93,13 @@ module.exports = class Bugsnag
 				when "function" then cb = argument
 		options ||= {}
 
-		notifyBugsnagError new Err(errorMessage, errorClass), cb
+		notifyBugsnagError new (require("./error"))(errorMessage, errorClass), cb
 		
 	notifyBugsnagError = (bugsnagError, options, cb) ->
-		notification = new Notification bugsnagError, options
+		notification = new (require("./notification")) bugsnagError, options
 		notification.deliver cb
 
 	@shouldNotify: ->
 		@notifyReleaseStages && @notifyReleaseStages.indexOf(@releaseStage) == -1
+
+Logger = require("./logger")

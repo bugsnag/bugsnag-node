@@ -3,10 +3,6 @@ Utils = require "./utils"
 Bugsnag = require "./bugsnag"
 
 module.exports = class Error
-	@errorClass: "Error"
-	@message: null
-	@stacktrace: []
-
 	constructor: (error, errorClass) ->
 		if Utils.typeOf(error) == "string"
 			@message = error
@@ -24,11 +20,12 @@ module.exports = class Error
 		return callSites.map (callSite) ->
 			frame = 
 				file: callSite.getFileName()
-				method: callSite.getMethodName()
+				method: callSite.getMethodName() || callSite.getFunctionName()
 				lineNumber: callSite.getLineNumber()
 				colunmNumber: callSite.getColumnNumber()
 
-			if Bugsnag.projectRoot?
-				frame.inProject = callSite.getFileName().indexOf("node_modules") == -1 && callSite.getFileName().indexOf(Bugsnag.projectRoot) == 0
+			if Bugsnag.projectRoot? && callSite.getFileName()?.indexOf(Bugsnag.projectRoot) == 0
+				frame.inProject = callSite.getFileName().indexOf("node_modules") == -1
+				frame.file = frame.file.substr(Bugsnag.projectRoot.length + 1)
 
 			return frame
