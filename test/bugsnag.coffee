@@ -1,3 +1,4 @@
+domain = require "domain"
 should = require("chai").should()
 sinon = require("sinon")
 
@@ -9,34 +10,33 @@ deliverStub = null
 
 before () ->
 	apiKey = "71ab53572c7b45316fb894d446f2e11d"
-	Bugsnag.register apiKey
-	deliverStub = sinon.stub(Notification.prototype, "deliver")
-
-afterEach () -> deliverStub.reset()
+	Bugsnag.register apiKey, notifyReleaseStages: ["production", "development"]
 
 describe "Bugsnag", ->
-	describe "Notification", ->
-		it "should call deliver once", ->
-			Bugsnag.notify("BigBadError", "This is the message")
+	beforeEach () -> deliverStub = sinon.stub(Notification.prototype, "deliver")
 
-			deliverStub.calledOnce.should.equal true
+	afterEach () -> Notification.prototype.deliver.restore()
 
-		it "should have the correct notification format", ->
-			Bugsnag.notify("BigBadError", "This is the message")
+	it "should call deliver when notifying a caught error", ->
+		try
+			throw new Error("This is the message")
+		catch e
+			Bugsnag.notify(e)
 
-			deliverStub.firstCall.thisValue.should.be.an("object")
-			deliverStub.firstCall.thisValue.should.have.keys(["apiKey", "notifier", "events"])
+		deliverStub.calledOnce.should.equal true
 
-		it "should identify the notifier properly", ->
-			Bugsnag.notify("BigBadError", "This is the message")
+	it "should call deliver when notifying an event emitter error", ->
+		eventEmitter = new (require('events').EventEmitter)()
+		eventEmitter.on "error", Bugsnag.notify
+		eventEmitter.emit "error", "Something went wrong"
+		
+		deliverStub.calledOnce.should.equal true
 
-			deliverStub.firstCall.thisValue.notifier.should.be.an("object")
-			deliverStub.firstCall.thisValue.notifier.should.have.keys(["name", "version", "url"])
-			deliverStub.firstCall.thisValue.notifier.should.have.property("name", "Bugsnag Node Notifier")
-			deliverStub.firstCall.thisValue.notifier.should.have.property("version", "0.2.0")
-			deliverStub.firstCall.thisValue.notifier.should.have.property("url", "https://github.com/bugsnag/bugsnag-node")
+	it "should call deliver when notifying with a domain, using event emitter", ->
+		mainDomain = domain.create()
+		mainDomain.on "error", Bugsnag.notify
+		mainDomain.run ->
+			eventEmitter = new (require('events').EventEmitter)()
+			eventEmitter.emit "error", new Error("Something went wrong")
 
-		it "should contain the APIKey", ->
-			Bugsnag.notify("BigBadError", "This is the message")
-
-			deliverStub.firstCall.thisValue.apiKey.should.equal apiKey
+		deliverStub.calledOnce.should.equal true

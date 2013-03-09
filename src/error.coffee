@@ -22,7 +22,7 @@ module.exports = class Error
 				file: callSite.getFileName()
 				method: callSite.getMethodName() || callSite.getFunctionName()
 				lineNumber: callSite.getLineNumber()
-				colunmNumber: callSite.getColumnNumber()
+				columnNumber: callSite.getColumnNumber()
 
 			if Bugsnag.projectRoot? && callSite.getFileName()?.indexOf(Bugsnag.projectRoot) == 0
 				frame.inProject = callSite.getFileName().indexOf("node_modules") == -1

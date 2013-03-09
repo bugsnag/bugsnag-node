@@ -5,23 +5,24 @@ Logger = require("./logger")
 module.exports = class Notification
 	constructor: (bugsnagError, options = {}) ->
 		@events = [
-			userId: options.userId || Bugsnag.userId
-			appVersion: Bugsnag.appVersion
-			osVersion: Bugsnag.osVersion
-			releaseStage: Bugsnag.releaseStage
-			context: options.context || Bugsnag.context
 			exceptions: [bugsnagError]
 		]
 
+		@events[0].userId = options.userId || Bugsnag.userId if options.userId || Bugsnag.userId
+		@events[0].appVersion = Bugsnag.appVersion if Bugsnag.appVersion
+		@events[0].releaseStage = Bugsnag.releaseStage if Bugsnag.releaseStage
+		@events[0].context = options.context || Bugsnag.context if options.context || Bugsnag.context
+		@events[0].osVersion = Bugsnag.osVersion if Bugsnag.osVersion
+
 		delete options.userId
 		delete options.context
-		@events[0].metaData = Utils.cloneObject Bugsnag.metaData
+		@events[0].metaData = Utils.cloneObject Bugsnag.metaData if Bugsnag.metaData && Object.keys(Bugsnag.metaData).length > 0
 
 		if options.req
 			@processRequest options.req
 			delete options.req
 
-		Utils.mergeObjects @events[0].metaData, options
+		Utils.mergeObjects @events[0].metaData ||= {}, options if Object.keys(options).length > 0
 
 		@apiKey = Bugsnag.apiKey
 		@notifier = 

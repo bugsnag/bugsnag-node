@@ -17,9 +17,9 @@ module.exports = class Utils
 	@getPackageVersion: (packageJSONPath) ->
 		try
 			packageInfo = require packageJSONPath
-			return packageInfo.version || "unknown"
+			return packageInfo.version
 		catch e
-			return "unknown"
+			return null
 
 	@fullPath: (unknownPath) ->
 		if unknownPath.indexOf(path.sep) == 0 then unknownPath else path.join(__dirname, unknownPath)
