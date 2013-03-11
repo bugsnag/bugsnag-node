@@ -95,7 +95,7 @@ module.exports = class Bugsnag
 		@notifyReleaseStages && @notifyReleaseStages.indexOf(@releaseStage) != -1
 
 	@handle: (err, req, res, next) =>
-		Logger.info "Handling express error: #{err}"
+		Logger.info "Handling express error: #{require("util").inspect err, true, null, true}"
 		@notify err, req: req
 		next err if next
 
