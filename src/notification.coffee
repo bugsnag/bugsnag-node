@@ -47,7 +47,7 @@ module.exports = class Notification
 	    	IPVersion: req.connection?.address()?.family
 
 	   @events[0].context ||= req.url
-	   @events[0].userId ||= req.headers["x-forwarded-for"] || req.connection?.remoteAddress
+	   @events[0].userId ||= req?.headers?["x-forwarded-for"] || req.connection?.remoteAddress
 
 	deliver: (cb) ->
 		cb = null unless Utils.typeOf(cb) == "function"
