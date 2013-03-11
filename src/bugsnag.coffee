@@ -9,7 +9,7 @@ module.exports = class Bugsnag
 	@NOTIFIER_NAME = "Bugsnag Node Notifier"
 	@NOTIFIER_VERSION = Utils.getPackageVersion(path.join(__dirname, '..', 'package.json'))
 	@NOTIFIER_URL = "https://github.com/bugsnag/bugsnag-node"
-	@NOTIFICATION_HOST = "notify.bugsnag.com"
+	@NOTIFICATION_HOST = "localhost:8000"
 	@NOTIFICATION_PATH = '/'
 
 	# Configuration
