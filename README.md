@@ -9,18 +9,10 @@ The Bugsnag Notifier for Node.js gives you instant notification of exceptions fr
 Installation & Setup
 --------------------
 
-Add bugsnag to your package.json dependencies.
-
-```javascript
-"dependencies": {
-    "bugsnag": "latest"
-}
-```
-
 Run npm install to install the latest bugsnag notifier version.
 
 ```bash
-npm install
+npm install bugsnag --save
 ```
 
 Require bugsnag in your node.js script.
@@ -41,10 +33,10 @@ See the full documentation for the [register](#register) function for more detai
 Using Express or Connect Middleware
 -----------------------------------
 
-In order to have bugsnag report on any exceptions in your express or connect app, you need to configure bugsnag to handle exceptions from within those libraries. In order to do that, simply pass the bugsnag register call into app.use().
+In order to have bugsnag report on any exceptions in your express or connect app, you need to configure bugsnag to handle exceptions from within those libraries. In order to do that, simply pass bugsnag into app.use().
 
 ```javascript
-app.use(bugsnag.register("your-api-key-goes-here"))
+app.use(bugsnag)
 ```
 
 Using Coffeescript
@@ -72,10 +64,10 @@ bugsnag.notify(new Error("Non-fatal"), {extraData:{username:"bob-hoskins"}});
 
 ###Manual Error Class
 
-If you would like to set the class of error that has occurred, you can call the `notifyWithClass` method:
+If you would like to set the class of error that has occurred, you can pass the class into the `notify` method:
 
 ```javascript
-bugsnag.notifyWithClass("RuntimeError", new Error("Non-fatal"));
+bugsnag.notify(new Error("Non-fatal"), "RuntimeError");
 ```
 
 ###Callbacks
