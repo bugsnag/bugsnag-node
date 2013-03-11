@@ -31,6 +31,7 @@ module.exports = class Notification
 			url: Bugsnag.NOTIFIER_URL
 
 	processRequest: (req) ->
+		@events[0].metaData ||= {}
 		@events[0].metaData.request =
     	url: req.url
     	method: req.method
