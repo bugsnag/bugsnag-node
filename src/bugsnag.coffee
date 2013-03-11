@@ -97,6 +97,6 @@ module.exports = class Bugsnag
 	@handle: (err, req, res, next) =>
 		Logger.info "Handling express error: #{err}"
 		@notify err, req: req
-		next err
+		next err if next
 
 Logger = require("./logger")
