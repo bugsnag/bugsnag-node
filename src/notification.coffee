@@ -78,7 +78,7 @@ module.exports = class Notification
 	  	if cb
 	  		cb err 
 	  	else
-	  		Logger.eror err
+	  		Logger.error err
 	  req.write payload, "utf-8"
 	  req.end()
 
