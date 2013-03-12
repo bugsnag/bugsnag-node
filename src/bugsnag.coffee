@@ -63,7 +63,7 @@ module.exports = class Bugsnag
 		if @autoNotify
 			Logger.info "Configuring uncaughtExceptionHandler"
 			process.on "uncaughtException", (err) =>
-				@notfy err, (error, response) =>
+				@notify err, (error, response) =>
 					console.log "Bugsnag: error notifying bugsnag.com - #{error}" if error
 					@onUncaughtException err if @onUncaughtException
 
