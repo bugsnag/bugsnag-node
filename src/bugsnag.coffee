@@ -9,8 +9,6 @@ module.exports = class Bugsnag
 	@NOTIFIER_NAME = "Bugsnag Node Notifier"
 	@NOTIFIER_VERSION = Utils.getPackageVersion(path.join(__dirname, '..', 'package.json'))
 	@NOTIFIER_URL = "https://github.com/bugsnag/bugsnag-node"
-	@NOTIFICATION_HOST = "localhost:8000"
-	@NOTIFICATION_PATH = '/'
 
 	# Configuration
 	@filters: ["password"]
@@ -18,6 +16,9 @@ module.exports = class Bugsnag
 	@projectRoot: path.dirname require.main.filename
 	@autoNotify: true
 	@useSSL: true
+	@notifyHost = "notify.bugsnag.com"
+	@notifyPath = '/'
+	@notifyPort = undefined
 	
 	# Payload contents
 	@apiKey: null
@@ -46,6 +47,9 @@ module.exports = class Bugsnag
 		@autoNotify = if options.autoNotify? then options.autoNotify else @autoNotify
 		@useSSL = if options.useSSL? then options.useSSL else @useSSL
 		@notifyReleaseStages = options.notifyReleaseStages || @notifyReleaseStages
+		@notifyHost = options.notifyHost || @notifyHost
+		@notifyPort = options.notifyPort || @notifyPort
+		@notifyPath = options.notifyPath || @notifyPath
 		
 		if options.projectRoot?
 			@projectRoot = fullPath options.projectRoot

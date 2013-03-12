@@ -59,9 +59,9 @@ module.exports = class Notification
 
 		payload = JSON.stringify @
 		options =
-    	host: Bugsnag.NOTIFICATION_HOST
-    	port: if Bugsnag.useSSL then 443 else 80
-    	path: Bugsnag.NOTIFICATION_PATH
+    	host: Bugsnag.notifyHost
+    	port: Bugsnag.notifyPort || (if Bugsnag.useSSL then 443 else 80)
+    	path: Bugsnag.notifyPath
     	method: 'POST'
     	headers:
       	"Content-Type": 'application/json'
@@ -74,7 +74,11 @@ module.exports = class Notification
 	  else
 	  	req = require("http").request(options, responseCallback(cb))
 
-	  req.on "error", (err) -> cb e if cb
+	  req.on "error", (err) ->
+	  	if cb
+	  		cb err 
+	  	else
+	  		Logging.eror err
 	  req.write payload, "utf-8"
 	  req.end()
 

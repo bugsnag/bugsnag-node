@@ -20,12 +20,13 @@ module.exports = class Error
 		return callSites.map (callSite) ->
 			frame = 
 				file: callSite.getFileName()
-				method: callSite.getMethodName() || callSite.getFunctionName()
+				method: callSite.getMethodName() || callSite.getFunctionName() || "none"
 				lineNumber: callSite.getLineNumber()
 				columnNumber: callSite.getColumnNumber()
 
 			if Bugsnag.projectRoot? && callSite.getFileName()?.indexOf(Bugsnag.projectRoot) == 0
 				frame.inProject = callSite.getFileName().indexOf("node_modules") == -1
+				delete frame.inProject unless frame.inProject
 				frame.file = frame.file.substr(Bugsnag.projectRoot.length + 1)
 
 			return frame
