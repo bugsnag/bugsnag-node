@@ -17,7 +17,7 @@ module.exports = class Bugsnag
 	@autoNotify: true
 	@useSSL: true
 	@notifyHost = "notify.bugsnag.com"
-	@notifyPath = '/'
+	@notifyPath = "/"
 	@notifyPort = undefined
 	
 	# Payload contents
