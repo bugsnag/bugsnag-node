@@ -56,7 +56,7 @@ module.exports = class Notification
 		Utils.filterObject(@events[0].metaData, Bugsnag.filters)
 
 		port = Bugsnag.notifyPort || (if Bugsnag.useSSL then 443 else 80)
-		Logger.info "Delivering exception to #{Bugsnag.notifyHost}:#{port}#{Bugsnag.notifyPath}"
+		Logger.info "Delivering exception to #{if Bugsnag.useSSL then "https" else "http"}://#{Bugsnag.notifyHost}:#{port}#{Bugsnag.notifyPath}"
 
 		payload = JSON.stringify @
 		options =
