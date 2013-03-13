@@ -33,7 +33,7 @@ describe "Notification", ->
 		deliverStub.firstCall.thisValue.notifier.should.be.an("object")
 		deliverStub.firstCall.thisValue.notifier.should.have.keys(["name", "version", "url"])
 		deliverStub.firstCall.thisValue.notifier.should.have.property("name", "Bugsnag Node Notifier")
-		deliverStub.firstCall.thisValue.notifier.should.have.property("version", "1.0.0")
+		deliverStub.firstCall.thisValue.notifier.should.have.property("version", require("../package.json").version)
 		deliverStub.firstCall.thisValue.notifier.should.have.property("url", "https://github.com/bugsnag/bugsnag-node")
 
 	it "should contain the APIKey", ->
