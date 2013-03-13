@@ -116,7 +116,7 @@ module.exports = class Bugsnag
 	# Intercepts the first argument from a callback and interprets it at as error.
 	# if the error is not null it notifies bugsnag and doesn't call the callback 
 	@intercept: (cb) =>
-		if process?.domain?.bugsnagDomain
+		if process.domain
 			return process.domain.intercept cb
 		else
 			return (err, args...) =>
@@ -132,7 +132,6 @@ module.exports = class Bugsnag
 			options = {}
 
 		dom = domain.create()
-		dom.bugsnagDomain = true
 		dom.on 'error', (err) =>
 			dom.dispose()
 			@notify err, options
