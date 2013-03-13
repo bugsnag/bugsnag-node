@@ -84,8 +84,6 @@ module.exports = class Notification
 	  req.end()
 
 	responseCallback = (cb) ->
-		cb = null unless Utils.typeOf(cb) == "function"
-
 		return (res) ->
 			if cb
      		bodyRes = ""

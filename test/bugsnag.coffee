@@ -9,7 +9,7 @@ apiKey = null
 deliverStub = null
 
 before () ->
-	apiKey = "71ab53572c7b45316fb894d446f2e11d"
+	apiKey = "71ab53572c7b45316fb894d496f2e11d"
 	Bugsnag.register apiKey, notifyReleaseStages: ["production", "development"]
 
 describe "Bugsnag", ->
@@ -40,3 +40,14 @@ describe "Bugsnag", ->
 			eventEmitter.emit "error", new Error("Something went wrong")
 
 		deliverStub.calledOnce.should.equal true
+
+describe "Bugsnag", ->
+	describe "Notification.deliver", ->
+		it "should call the callback after notifying bugsnag", (done) ->
+			Bugsnag.notify("error message", done)
+
+		it "should call callback when releaseStage isnt configured in notifyReleaseStages", (done) ->
+			oldNotifyReleaseStagesValue = Bugsnag.notifyReleaseStages
+			Bugsnag.notifyReleaseStages = ["production"]
+			Bugsnag.notify("This is the message", "BigBadError", done)
+			Bugsnag.notifyReleaseStages = oldNotifyReleaseStagesValue

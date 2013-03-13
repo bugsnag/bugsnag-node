@@ -1,3 +1,4 @@
+domain = require "domain"
 path = require "path"
 
 Utils = require "./utils"
@@ -14,7 +15,7 @@ module.exports = class Bugsnag
 	@filters: ["password"]
 	@notifyReleaseStages: ["production", "development"]
 	@projectRoot: path.dirname require.main.filename
-	@autoNotify: true
+	@autoNotifyUncaught: true
 	@useSSL: true
 	@notifyHost = "notify.bugsnag.com"
 	@notifyPath = "/"
@@ -44,7 +45,7 @@ module.exports = class Bugsnag
 
 		@releaseStage = options.releaseStage || @releaseStage
 		@appVersion = options.appVersion || @appVersion
-		@autoNotify = if options.autoNotify? then options.autoNotify else @autoNotify
+		@autoNotifyUncaught = if options.autoNotify? then options.autoNotify else @autoNotifyUncaught
 		@useSSL = if options.useSSL? then options.useSSL else @useSSL
 		@notifyReleaseStages = options.notifyReleaseStages || @notifyReleaseStages
 		@notifyHost = options.notifyHost || @notifyHost
@@ -60,11 +61,11 @@ module.exports = class Bugsnag
 		unless @appVersion
 			@appVersion = Utils.getPackageVersion(path.join(path.dirname(require.main.filename),'package.json')) || Utils.getPackageVersion(path.join(@projectRoot, 'package.json'))
 
-		if @autoNotify
+		if @autoNotifyUncaught
 			Logger.info "Configuring uncaughtExceptionHandler"
 			process.on "uncaughtException", (err) =>
 				@notify err, (error, response) =>
-					console.log "Bugsnag: error notifying bugsnag.com - #{error}" if error
+					Logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
 					@onUncaughtException err if @onUncaughtException
 
 	# Only error is required, and that can be a string or error object
@@ -74,8 +75,6 @@ module.exports = class Bugsnag
 	# object options = The options for the notification
 	# function cb = The callback function
 	@notify: (error) =>
-		return unless @shouldNotify()
-
 		# reset the arguments, we want errorClass to be there, but also optional
 		errorClass = undefined
 		options = {}
@@ -90,6 +89,10 @@ module.exports = class Bugsnag
 				when "object" then options = argument
 				when "function" then cb = argument
 
+		unless @shouldNotify()
+			cb() if cb
+			return
+
 		Logger.info "Notifying Bugsnag of exception...\n#{error?.stack || error}"
 		bugsnagError = new (require("./error"))(error, errorClass)
 		notification = new (require("./notification"))(bugsnagError, options)
@@ -98,9 +101,45 @@ module.exports = class Bugsnag
 	@shouldNotify: =>
 		@notifyReleaseStages && @notifyReleaseStages.indexOf(@releaseStage) != -1
 
-	@handle: (err, req, res, next) =>
-		Logger.info "Handling express error: #{err}"
+	@errorHandler: (err, req, res, next) =>
+		Logger.info "Handling express error: #{err.stack}"
 		@notify err, req: req
-		next err if next
+		next err
+
+	@requestHandler: (req, res, next) ->
+		dom = domain.create()
+		dom.on 'error', (err) ->
+			dom.dispose()
+			next err
+		dom.run next
+
+	# Intercepts the first argument from a callback and interprets it at as error.
+	# if the error is not null it notifies bugsnag and doesn't call the callback 
+	@intercept: (cb) =>
+		if process?.domain?.bugsnagDomain
+			return process.domain.intercept cb
+		else
+			return (err, args...) =>
+				return @notify(err) if err
+				cb(args...)
+
+	# Automatically notifies of uncaught exceptions in the callback and error
+	# event emitters. Returns an event emitter, you can hook into .on("error") if
+	# you want to.
+	@autoNotify: (options, cb) =>
+		if Utils.typeOf options == "function"
+			cb = options
+			options = {}
+
+		dom = domain.create()
+		dom.bugsnagDomain = true
+		dom.on 'error', (err) =>
+			dom.dispose()
+			@notify err, options
+		
+		process.nextTick ->
+			dom.run cb
+		
+		return dom
 
 Logger = require("./logger")
