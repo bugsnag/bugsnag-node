@@ -8,6 +8,8 @@ module.exports = class Notification
 			exceptions: [bugsnagError]
 		]
 
+		bugsnagError.errorClass = options.errorClass if options.errorClass
+
 		@events[0].userId = options.userId || Bugsnag.userId if options.userId || Bugsnag.userId
 		@events[0].appVersion = Bugsnag.appVersion if Bugsnag.appVersion
 		@events[0].releaseStage = Bugsnag.releaseStage if Bugsnag.releaseStage
@@ -16,6 +18,7 @@ module.exports = class Notification
 
 		delete options.userId
 		delete options.context
+		delete options.errorClass
 		@events[0].metaData = Utils.cloneObject Bugsnag.metaData if Bugsnag.metaData && Object.keys(Bugsnag.metaData).length > 0
 
 		if options.req

@@ -32,7 +32,7 @@ module.exports = class Bugsnag
 
 	# The callback fired when we receive an uncaught exception. Defaults to printing the stack and exiting
 	@onUncaughtException: (err) =>
-		console.log err.stack || err
+		console.error err.stack || err
 		process.exit(1)
 
 	@register: (apiKey, options = {}) =>
@@ -99,7 +99,7 @@ module.exports = class Bugsnag
 		notification.deliver cb
 
 	@shouldNotify: =>
-		@notifyReleaseStages && @notifyReleaseStages.indexOf(@releaseStage) != -1
+		@notifyReleaseStages && @notifyReleaseStages.indexOf(@releaseStage) != -1 && @apiKey
 
 	@errorHandler: (err, req, res, next) =>
 		Logger.info "Handling express error: #{err.stack}"
@@ -116,18 +116,19 @@ module.exports = class Bugsnag
 	# Intercepts the first argument from a callback and interprets it at as error.
 	# if the error is not null it notifies bugsnag and doesn't call the callback 
 	@intercept: (cb) =>
+		cb = (->) unless cb
 		if process.domain
 			return process.domain.intercept cb
 		else
 			return (err, args...) =>
 				return @notify(err) if err
-				cb(args...)
+				cb(args...) if cb
 
 	# Automatically notifies of uncaught exceptions in the callback and error
 	# event emitters. Returns an event emitter, you can hook into .on("error") if
 	# you want to.
 	@autoNotify: (options, cb) =>
-		if Utils.typeOf options == "function"
+		if Utils.typeOf(options) == "function"
 			cb = options
 			options = {}
 
