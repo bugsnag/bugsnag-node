@@ -49,5 +49,5 @@ describe "Bugsnag", ->
     it "should call callback when releaseStage isnt configured in notifyReleaseStages", (done) ->
       oldNotifyReleaseStagesValue = Bugsnag.notifyReleaseStages
       Bugsnag.notifyReleaseStages = ["production"]
-      Bugsnag.notify("This is the message", "BigBadError", done)
+      Bugsnag.notify("This is the message", done)
       Bugsnag.notifyReleaseStages = oldNotifyReleaseStagesValue

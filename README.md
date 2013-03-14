@@ -191,7 +191,6 @@ bugsnag.register("your-api-key-here", { metaData: {
 }});
 ```
 
-
 Notify
 ------
 
@@ -199,10 +198,10 @@ The `bugsnag.notify` function accepts an error as either a string or an Error ob
 
 ### errorClass
 
-Errors in your Bugsnag dashboard are grouped by their "error class", to override the error class you can set `errorClass`:
+Errors in your Bugsnag dashboard are grouped by their "error class", to override the error class you can set `errorName`:
 
 ```javascript
-bugsnag.notify(new Error("Something went badly wrong"), { errorClass: "BadError" });
+bugsnag.notify(new Error("Something went badly wrong"), { errorName: "BadError" });
 ```
 
 ### context
