@@ -33,7 +33,7 @@ See below for [additional configuration options](#configuration).
 Using Express or Connect Middleware
 -----------------------------------
 
-If your app uses [Express](http://expressjs.com/) (or [Connect](http://www.senchalabs.org/connect/)), Bugsnag can automatically capture errors that happen during requests, including errors that happen in asynchronous code.
+If your app uses [Express](http://expressjs.com/) or [Connect](http://www.senchalabs.org/connect/), Bugsnag can automatically capture errors that happen during requests, including errors that happen in asynchronous code.
 
 To ensure that asynchronous errors are routed to the error handler, add the `requestHandler` middleware to your app as the **first** middleware:
 
