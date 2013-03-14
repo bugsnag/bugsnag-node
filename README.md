@@ -27,7 +27,7 @@ Register the bugsnag notifier with your API key:
 bugsnag.register("your-api-key-here");
 ```
 
-See the full documentation for the [register](#register) function for additional options.
+See below for [additional configuration options](#configuration).
 
 
 Using Express or Connect Middleware
