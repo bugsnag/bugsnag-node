@@ -3,7 +3,7 @@ Bugsnag Notifier for Node.js
 
 The Bugsnag Notifier for Node.js automatically notifies you of synchronous and asynchronous errors in your Node.js applications.
 
-[Bugsnag](http://bugsnag.com) captures errors in real-time from your web, mobile and desktop applications, helping you to understand and resolve them as fast as possible. [Create a free account](http://bugsnag.com) to start capturing exceptions from your applications.
+[Bugsnag](http://bugsnag.com) captures errors in real-time from your web, mobile and desktop applications, helping you to understand and resolve them as fast as possible. [Create a free account](http://bugsnag.com) to start capturing errors from your applications.
 
 
 Installation & Setup
