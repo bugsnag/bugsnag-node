@@ -1,12 +1,13 @@
 module.exports = class Logger
   @LOG_PREFIX = "Bugsnag"
-  @logLevel = "error"
+  
+  logLevel = "error"
 
-  @info: (output...) ->
+  info: (output...) =>
     console.log "#{@LOG_PREFIX}: ", output... if @logLevel == "info"
 
-  @warn: (output...) ->
+  warn: (output...) =>
     console.log "#{@LOG_PREFIX}: ", output... if @logLevel == "warn" || @logLevel == "log"
 
-  @error: (output...) ->
+  error: (output...) =>
     console.error "#{@LOG_PREFIX}: ", output... if @logLevel?

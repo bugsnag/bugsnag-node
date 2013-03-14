@@ -167,13 +167,13 @@ Notify
 
 The `notify` function accepts an error as either a string or an Error object as the first argument. It then also accepts the following other optional arguments.
 
-###errorClass
+###errorName
 
-Bugsnag will use any errorClass option as the class of error that is being notified. This means that you don't have to subclass the `Error` class when trying to send custom errors.
+Bugsnag will use any errorName option as the name of error that is being notified. This means that you don't have to subclass the `Error` class when trying to send custom errors.
 
 ```javascript
 // Will show up in the Bugsnag dashboard as a "BadError" error
-bugsnag.notify(new Error("Something went badly wrong"), {errorClass:"BadError"});
+bugsnag.notify(new Error("Something went badly wrong"), {errorName:"BadError"});
 ```
 
 ###context

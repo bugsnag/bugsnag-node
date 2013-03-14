@@ -17,18 +17,18 @@ describe "Notification", ->
   afterEach () -> Notification.prototype.deliver.restore()
 
   it "should call deliver once", ->
-    Bugsnag.notify("This is the message", "BigBadError")
+    Bugsnag.notify("This is the message")
 
     deliverStub.calledOnce.should.equal true
 
   it "should have the correct notification format", ->
-    Bugsnag.notify("This is the message", "BigBadError")
+    Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.should.be.an("object")
     deliverStub.firstCall.thisValue.should.have.keys(["apiKey", "notifier", "events"])
 
   it "should identify the notifier properly", ->
-    Bugsnag.notify("This is the message", "BigBadError")
+    Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.notifier.should.be.an("object")
     deliverStub.firstCall.thisValue.notifier.should.have.keys(["name", "version", "url"])
@@ -37,64 +37,32 @@ describe "Notification", ->
     deliverStub.firstCall.thisValue.notifier.should.have.property("url", "https://github.com/bugsnag/bugsnag-node")
 
   it "should contain the APIKey", ->
-    Bugsnag.notify("This is the message", "BigBadError")
+    Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.apiKey.should.equal apiKey
 
   it "should contain an event", ->
-    Bugsnag.notify("This is the message", "BigBadError")
+    Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.events.length.should.equal 1
     deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions")
 
   describe "userId", ->
-    it "should send a userId when configured on Bugsnag", ->
-      Bugsnag.userId = "TemporaryUserId"
-      Bugsnag.notify("This is the message", "BigBadError")
-
-      deliverStub.firstCall.thisValue.events[0].userId.should.equal "TemporaryUserId"
-
-      Bugsnag.userId = null
-
     it "should send a userId when passed as option to notify", ->
-      Bugsnag.notify("BigBadError", "This is the message", userId: "TempId")
+      Bugsnag.notify("This is the message", userId: "TempId")
 
       deliverStub.firstCall.thisValue.events[0].userId.should.equal "TempId"
-
-    it "should overwrite a userId when passed as option to notify", ->
-      Bugsnag.userId = "TemporaryUserId"
-      Bugsnag.notify("BigBadError", "This is the message", userId: "TempId")
-
-      deliverStub.firstCall.thisValue.events[0].userId.should.equal "TempId"
-
-      Bugsnag.userId = null
 
   describe "context", ->
-    it "should send a context when configured on Bugsnag", ->
-      Bugsnag.context = "TemporaryContext"
-      Bugsnag.notify("This is the message", "BigBadError")
-
-      deliverStub.firstCall.thisValue.events[0].context.should.equal "TemporaryContext"
-
-      Bugsnag.context = null
-
     it "should send a context when passed as option to notify", ->
-      Bugsnag.notify("BigBadError", "This is the message", context: "TempContext")
+      Bugsnag.notify("This is the message", context: "TempContext")
 
       deliverStub.firstCall.thisValue.events[0].context.should.equal "TempContext"
-
-    it "should overwrite a context when passed as option to notify", ->
-      Bugsnag.context = "TemporaryContext"
-      Bugsnag.notify("BigBadError", "This is the message", context: "TempContext")
-
-      deliverStub.firstCall.thisValue.events[0].context.should.equal "TempContext"
-
-      Bugsnag.context = null
 
   describe "appVersion", ->
     it "should send an appVersion when configured on Bugsnag", ->
       Bugsnag.appVersion = "BugsnagVersion"
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].appVersion.should.equal "BugsnagVersion"
 
@@ -104,7 +72,7 @@ describe "Notification", ->
     it "shouldnt send a notification when releaseStage isnt configured in notifyReleaseStages", ->
       oldNotifyReleaseStagesValue = Bugsnag.notifyReleaseStages
       Bugsnag.notifyReleaseStages = ["production"]
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message")
 
       deliverStub.called.should.equal false
       Bugsnag.notifyReleaseStages = oldNotifyReleaseStagesValue
@@ -114,7 +82,7 @@ describe "Notification", ->
       oldNotifyReleaseStagesValue = Bugsnag.notifyReleaseStages
       Bugsnag.notifyReleaseStages = ["production"]
       Bugsnag.releaseStage = "production"
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].releaseStage.should.equal "production"
 
@@ -124,7 +92,7 @@ describe "Notification", ->
   describe "osVersion", ->
     it "should allow you to set the osVersion", ->
       Bugsnag.osVersion = "BugsnagOSVersion"
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].osVersion.should.equal "BugsnagOSVersion"
 
@@ -132,19 +100,19 @@ describe "Notification", ->
 
   describe "exceptions", ->
     it "should only have a single well formatted exception", ->
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].exceptions.length.should.equal 1
       deliverStub.firstCall.thisValue.events[0].exceptions[0].should.have.keys("errorClass", "message", "stacktrace")
 
     it "should set errorClass and message properly", ->
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message", errorName: "BigBadError")
 
       deliverStub.firstCall.thisValue.events[0].exceptions[0].errorClass.should.equal "BigBadError"
       deliverStub.firstCall.thisValue.events[0].exceptions[0].message.should.equal "This is the message"
 
     it "should have a proper stacktrace", ->
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace.should.be.an("array")
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace.should.have.length.of.at.least 2
@@ -157,7 +125,7 @@ describe "Notification", ->
     it "should set projectRoot according to configuration", ->
       oldValue = Bugsnag.projectRoot
       Bugsnag.projectRoot = __dirname
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].should.not.have.property("inProject")
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[2].should.have.property("inProject", true)
@@ -169,7 +137,7 @@ describe "Notification", ->
       Bugsnag.metaData =
         key: "value"
       
-      Bugsnag.notify("This is the message", "BigBadError")
+      Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key")
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value")
@@ -177,7 +145,7 @@ describe "Notification", ->
       Bugsnag.metaData = null
 
     it "should allow configured metadata on Bugsnag notify", ->
-      Bugsnag.notify("This is the message", "BigBadError", key: "value")
+      Bugsnag.notify("This is the message", key: "value")
 
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key")
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value")
@@ -186,7 +154,7 @@ describe "Notification", ->
       Bugsnag.metaData =
         key: "value"
 
-      Bugsnag.notify("This is the message", "BigBadError", key1: "value1")
+      Bugsnag.notify("This is the message", key1: "value1")
 
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key", "key1")
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value")
@@ -198,7 +166,7 @@ describe "Notification", ->
       Bugsnag.metaData =
         key: "value"
 
-      Bugsnag.notify("This is the message", "BigBadError", key: "value1")
+      Bugsnag.notify("This is the message", key: "value1")
 
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key")
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value1")
