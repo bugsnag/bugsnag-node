@@ -39,7 +39,7 @@ So that Bugsnag can know which request was affected by an error, you need to add
 app.use(bugsnag.requestHandler);
 ```
 
-In order to have Bugsnag report on any errors in your express or connect app, you need to add the Bugsnag error middleware to your express or connect app. In order to do that, simply pass `bugsnag.errorHandler` into app.use(). This middleware should be the first error handler middleware added to your app, and should be added after all request middlewares.
+In order to have Bugsnag report on any errors in your express or connect app, you need to add the Bugsnag error middleware to your express or connect app. This middleware should be the first error handler middleware added to your app, and should be added after all request middlewares.
 
 ```javascript
 app.use(bugsnag.errorHandler);
@@ -73,10 +73,19 @@ See the full documentation for the [notify](#notify) function for more details.
 Capturing All Errors
 --------------------
 
-For Bugsnag to be notified of all uncaught exceptions and unhandled error event emmiter events, you should use 'autoNotify' to wrap your code. This will wrap the enclosing code in a [domain](http://nodejs.org/api/domain.html).
+For Bugsnag to be notified of all uncaught exceptions and unhandled error event emmiter events, you should use 'autoNotify' to wrap your code. This will wrap the enclosing code in a [domain](http://nodejs.org/api/domain.html) (You dont need to do this in an express/connect app if you are using the [middleware](#using-express-or-connect-middleware)).
 
 ```javascript
 bugsnag.autoNotify(function(){
+	// Here bugsnag will be notified of all uncaught exceptions and unhandled 'error' 
+	// event emitter events.
+});
+```
+
+You can also pass options into `autoNotify` that will be used as default options for the notify call to any errors. See the [notify](#notify) docs for more details.
+
+```javascript
+bugsnag.autoNotify({context:"thisContext"}, function(){
 	// Here bugsnag will be notified of all uncaught exceptions and unhandled 'error' 
 	// event emitter events.
 });
