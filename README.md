@@ -99,7 +99,7 @@ bugsnag.autoNotify({ context: "thisContext" }, function() {
 });
 ```
 
-The `autoNotify` function creates a Node.js [`Domain`](http://nodejs.org/api/domain.html) which automatically routes all uncaught exceptions to Bugsnag.
+The `autoNotify` function creates a Node.js [`Domain`](http://nodejs.org/api/domain.html) which automatically routes all uncaught errors to Bugsnag.
 
 Capturing Errors from Callbacks
 -------------------------------
