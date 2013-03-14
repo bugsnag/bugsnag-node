@@ -35,13 +35,13 @@ Using Express or Connect Middleware
 
 If your app uses [Express](http://expressjs.com/) or [Connect](http://www.senchalabs.org/connect/), Bugsnag can automatically capture errors that happen during requests, including errors that happen in asynchronous code.
 
-To ensure that asynchronous errors are routed to the error handler, add the `requestHandler` middleware to your app as the **first** middleware:
+To ensure that asynchronous errors are routed to the error handler, add the `requestHandler` middleware to your app as the **first middleware**:
 
 ```javascript
 app.use(bugsnag.requestHandler);
 ```
 
-You'll also need to add Bugsnag's error handling middleware, make sure to add this after all "request" middlewares, but before any other "error" middleware:
+You'll also need to add Bugsnag's error handling middleware, make sure to add this after all other middleware, but before any "error" middleware:
 
 ```javascript
 app.use(bugsnag.errorHandler);
@@ -91,8 +91,6 @@ bugsnag.autoNotify(function() {
 });
 ```
 
-The `autoNotify` function creates a Node.js [`Domain`](http://nodejs.org/api/domain.html) which automatically routes all uncaught exceptions to Bugsnag.
-
 Additionally, you can pass options into `autoNotify` that will be used as default options for the notify call to any errors. See the [notify](#notify) docs for more details.
 
 ```javascript
@@ -101,6 +99,7 @@ bugsnag.autoNotify({ context: "thisContext" }, function() {
 });
 ```
 
+The `autoNotify` function creates a Node.js [`Domain`](http://nodejs.org/api/domain.html) which automatically routes all uncaught exceptions to Bugsnag.
 
 Capturing Errors from Callbacks
 -------------------------------
