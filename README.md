@@ -33,13 +33,13 @@ See the full documentation for the [register](#register) function for more detai
 Using Express or Connect Middleware
 -----------------------------------
 
-So that Bugsnag can know which request was affected by an error, you need to add a request middleware. This middleware performs the same function as [connect-domain](https://github.com/baryshev/connect-domain) and uses [domains](http://nodejs.org/api/domain.html) to perform more in depth error handling.
+So that Bugsnag can know which request was affected by an error, you need to add a request middleware. This middleware performs the same function as [connect-domain](https://github.com/baryshev/connect-domain) and uses [domains](http://nodejs.org/api/domain.html) to perform more in depth error handling. This middleware should be the first middleware added to your app.
 
 ```javascript
 app.use(bugsnag.requestHandler);
 ```
 
-In order to have Bugsnag report on any errors in your express or connect app, you need to add the Bugsnag error middleware to your express or connect app. In order to do that, simply pass `bugsnag.errorHandler` into app.use().
+In order to have Bugsnag report on any errors in your express or connect app, you need to add the Bugsnag error middleware to your express or connect app. In order to do that, simply pass `bugsnag.errorHandler` into app.use(). This middleware should be the first error handler middleware added to your app, and should be added after all request middlewares.
 
 ```javascript
 app.use(bugsnag.errorHandler);
