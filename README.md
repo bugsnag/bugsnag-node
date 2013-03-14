@@ -215,7 +215,7 @@ bugsnag.notify(new Error("Something went badly wrong"), function(error, response
   	//The notify worked
   }
 })
-
+```
 
 Configuration
 -------------
