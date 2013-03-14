@@ -77,8 +77,8 @@ For Bugsnag to be notified of all uncaught exceptions and unhandled error event 
 
 ```javascript
 bugsnag.autoNotify(function(){
-	// Here bugsnag will be notified of all uncaught exceptions and unhandled 'error' 
-	// event emitter events.
+  // Here bugsnag will be notified of all uncaught exceptions and unhandled 'error' 
+  // event emitter events.
 });
 ```
 
@@ -86,8 +86,8 @@ You can also pass options into `autoNotify` that will be used as default options
 
 ```javascript
 bugsnag.autoNotify({context:"thisContext"}, function(){
-	// Here bugsnag will be notified of all uncaught exceptions and unhandled 'error' 
-	// event emitter events.
+  // Here bugsnag will be notified of all uncaught exceptions and unhandled 'error' 
+  // event emitter events.
 });
 ```
 
@@ -95,9 +95,9 @@ Bugsnag can also intercept the first argument of a callback using `bugsnag.inter
 
 ```javascript
 functionWithCallback(bugsnag.intercept(function(argument){
-	// This callback will only be called if functionWithCallback did not pass an error
-	// as the first argument to the callback function. If it does pass an error, the callback
-	// wont be called and bugsnag will be notified of the error.
+  // This callback will only be called if functionWithCallback did not pass an error
+  // as the first argument to the callback function. If it does pass an error, the callback
+  // wont be called and bugsnag will be notified of the error.
 }));
 ```
 
@@ -216,12 +216,12 @@ Bugsnag will also call a callback after it has finished notifying Bugsnag of an 
 
 ```javascript
 bugsnag.notify(new Error("Something went badly wrong"), function(error, response){
-	// here error is any error generated while trying to send the notification to Bugsnag
-	// and response is the actual response received from bugsnag, as a string
-	if(err) {
+  // here error is any error generated while trying to send the notification to Bugsnag
+  // and response is the actual response received from bugsnag, as a string
+  if(err) {
     //Something went wrong
   } else {
-  	//The notify worked
+    //The notify worked
   }
 })
 ```
