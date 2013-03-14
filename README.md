@@ -48,7 +48,7 @@ app.use(bugsnag.errorHandler);
 Using Coffeescript
 ------------------
 
-When running coffeecript code using the `coffee` executable, Bugsnag cannot notify about uncaught exceptions that are at the top level of your app. It will only be able to notify about those uncaught exceptions in callbacks. This is due to a [feature](https://github.com/jashkenas/coffee-script/issues/1438) of the `coffee` executable. 
+When running coffeecript code using the `coffee` executable, Bugsnag cannot notify about uncaught exceptions that are at the top level of your app. It will only be able to notify about those uncaught exceptions in callbacks. This is due to a [feature](https://github.com/jashkenas/coffee-script/issues/1438) of the `coffee` executable.
 
 In order to get round this you can compile the coffeescript file into a javascript file by running `coffee -c filename.coffee` and then running `node filename.js` to execute your app. This is automatable if you use a [Cakefile](http://coffeescript.org/documentation/docs/cake.html), or you can use [Grunt](http://gruntjs.com/).
 
@@ -80,6 +80,7 @@ bugsnag.autoNotify(function(){
 	// Here bugsnag will be notified of all uncaught exceptions and unhandled 'error' 
 	// event emitter events.
 });
+```
 
 Bugsnag can also intercept the first argument of a callback using `bugsnag.intercept`, replacing the boilerplate `if(err) return bugsnag.notify(err);` everywhere. This works in a similar manner to [domain.intercept](http://nodejs.org/api/domain.html#domain_domain_intercept_callback).
 
