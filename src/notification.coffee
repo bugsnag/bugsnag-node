@@ -1,6 +1,6 @@
-Bugsnag = require "./bugsnag"
 Utils = require "./utils"
 Logger = require "./logger"
+Configuration = require "./configuration"
 path = require "path"
 
 module.exports = class Notification
@@ -13,23 +13,23 @@ module.exports = class Notification
     event = 
       exceptions: [bugsnagError]
 
-    event.userId = options.userId if options.userId
-    event.appVersion = Bugsnag.appVersion if Bugsnag.appVersion
-    event.releaseStage = Bugsnag.releaseStage if Bugsnag.releaseStage
-    event.context = options.context if options.context
-    event.osVersion = Bugsnag.osVersion if Bugsnag.osVersion
+    event.userId = options.userId || process?.domain?._bugsnagOptions?.userId if options.userId || process?.domain?._bugsnagOptions?.userId
+    event.context = options.context || process?.domain?._bugsnagOptions?.context if options.context || process?.domain?._bugsnagOptions?.context
+
+    event.appVersion = Configuration.appVersion if Configuration.appVersion
+    event.releaseStage = Configuration.releaseStage if Configuration.releaseStage
 
     delete options.userId
     delete options.context
-    event.metaData = Utils.cloneObject Bugsnag.metaData if Bugsnag.metaData && Object.keys(Bugsnag.metaData).length > 0
+    event.metaData = Utils.cloneObject Configuration.metaData if Configuration.metaData && Object.keys(Configuration.metaData).length > 0
 
-    if options.req
-      @processRequest event, options.req
+    if options.req || process?.domain?._bugsnagOptions?.req
+      @processRequest event, options.req || process?.domain?._bugsnagOptions?.req
       delete options.req
 
     Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0
 
-    @apiKey = Bugsnag.apiKey
+    @apiKey = Configuration.apiKey
     @notifier = 
       name: NOTIFIER_NAME
       version: NOTIFIER_VERSION
@@ -41,29 +41,29 @@ module.exports = class Notification
     cb = null unless Utils.typeOf(cb) == "function"
     
     # Filter before sending
-    Utils.filterObject(@events[0].metaData, Bugsnag.filters)
+    Utils.filterObject(@events[0].metaData, Configuration.filters)
 
-    port = Bugsnag.notifyPort || (if Bugsnag.useSSL then 443 else 80)
-    Bugsnag.logger.info "Delivering exception to #{if Bugsnag.useSSL then "https" else "http"}://#{Bugsnag.notifyHost}:#{port}#{Bugsnag.notifyPath}"
+    port = Configuration.notifyPort || (if Configuration.useSSL then 443 else 80)
+    Configuration.logger.info "Delivering exception to #{if Configuration.useSSL then "https" else "http"}://#{Configuration.notifyHost}:#{port}#{Configuration.notifyPath}"
 
     payload = JSON.stringify @
     options =
-      host: Bugsnag.notifyHost
+      host: Configuration.notifyHost
       port: port
-      path: Bugsnag.notifyPath
+      path: Configuration.notifyPath
       method: 'POST'
       headers:
         "Content-Type": 'application/json'
         "Content-Length": payload.length
 
-    Bugsnag.logger.info payload
+    Configuration.logger.info payload
 
-    lib = if Bugsnag.useSSL then require("https") else require("http")
+    lib = if Configuration.useSSL then require("https") else require("http")
     req = lib.request options, (res) ->
       if cb
-         bodyRes = ""
+        bodyRes = ""
 
-         res.setEncoding 'utf8'
+        res.setEncoding 'utf8'
         res
         .on('data', (chunk) -> bodyRes += chunk if chunk)
         .on 'end', () ->
@@ -76,7 +76,7 @@ module.exports = class Notification
       if cb
         cb err 
       else
-        Bugsnag.logger.error err
+        Configuration.logger.error err
     req.write payload, "utf-8"
     req.end()
 

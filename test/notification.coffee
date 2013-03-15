@@ -11,6 +11,9 @@ before () ->
   apiKey = "71ab53572c7b45316fb894d446f2e11d"
   Bugsnag.register apiKey, notifyReleaseStages: ["production", "development"]
 
+beforeEach ->
+  Bugsnag.configure notifyReleaseStages: ["production", "development"]
+
 describe "Notification", ->
   beforeEach () -> deliverStub = sinon.stub(Notification.prototype, "deliver")
 
@@ -61,42 +64,23 @@ describe "Notification", ->
 
   describe "appVersion", ->
     it "should send an appVersion when configured on Bugsnag", ->
-      Bugsnag.appVersion = "BugsnagVersion"
+      Bugsnag.configure appVersion: "BugsnagVersion"
       Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].appVersion.should.equal "BugsnagVersion"
 
-      Bugsnag.appVersion = null
-
   describe "releaseStage", ->
     it "shouldnt send a notification when releaseStage isnt configured in notifyReleaseStages", ->
-      oldNotifyReleaseStagesValue = Bugsnag.notifyReleaseStages
-      Bugsnag.notifyReleaseStages = ["production"]
+      Bugsnag.configure notifyReleaseStages: ["production"]
       Bugsnag.notify("This is the message")
 
       deliverStub.called.should.equal false
-      Bugsnag.notifyReleaseStages = oldNotifyReleaseStagesValue
 
     it "should allow you to change the releaseStage", ->
-      oldReleaseStage = Bugsnag.releaseStage
-      oldNotifyReleaseStagesValue = Bugsnag.notifyReleaseStages
-      Bugsnag.notifyReleaseStages = ["production"]
-      Bugsnag.releaseStage = "production"
+      Bugsnag.configure notifyReleaseStages: ["production"], releaseStage: "production"
       Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].releaseStage.should.equal "production"
-
-      Bugsnag.notifyReleaseStages = oldNotifyReleaseStagesValue  
-      Bugsnag.releaseStage = oldReleaseStage
-
-  describe "osVersion", ->
-    it "should allow you to set the osVersion", ->
-      Bugsnag.osVersion = "BugsnagOSVersion"
-      Bugsnag.notify("This is the message")
-
-      deliverStub.firstCall.thisValue.events[0].osVersion.should.equal "BugsnagOSVersion"
-
-      Bugsnag.osVersion = null
 
   describe "exceptions", ->
     it "should only have a single well formatted exception", ->
@@ -123,14 +107,11 @@ describe "Notification", ->
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].method.should.equal "Error"
 
     it "should set projectRoot according to configuration", ->
-      oldValue = Bugsnag.projectRoot
-      Bugsnag.projectRoot = __dirname
+      Bugsnag.configure projectRoot: __dirname
       Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].should.not.have.property("inProject")
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[2].should.have.property("inProject", true)
-
-      Bugsnag.projectRoot = oldValue
 
   describe "metaData", ->
     it "should allow configured metadata on Bugsnag object", ->

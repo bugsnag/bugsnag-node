@@ -171,7 +171,7 @@ bugsnag.register("your-api-key-here", { packageJSON: "/path/to/package.json" });
 
 ### useSSL
 
-By defauly, errors will be sent to Bugsnag using SSL. To disable SSL, you can set `useSSL`:
+By default, errors will be sent to Bugsnag using SSL. To disable SSL, you can set `useSSL`:
 
 ```javascript
 bugsnag.register("your-api-key-here", { useSSL: false });
@@ -191,12 +191,14 @@ bugsnag.register("your-api-key-here", { metaData: {
 }});
 ```
 
+You can adjust this after calling register by using the `bugsnag.metaData` property.
+
 Notify
 ------
 
 The `bugsnag.notify` function accepts an error as either a string or an Error object as the first argument, as well as options object as its second parameter. The options can be a combination of any of the following:
 
-### errorClass
+### errorName
 
 Errors in your Bugsnag dashboard are grouped by their "error class", to override the error class you can set `errorName`:
 

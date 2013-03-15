@@ -2,101 +2,71 @@ domain = require "domain"
 path = require "path"
 
 Utils = require "./utils"
-
 Logger = require "./logger"
+Configuration = require "./configuration"
+BugsnagError = require "./error"
+Notification = require "./notification"
 
 # Make sure we get all stack frames from thrown errors
 Error.stackTraceLimit = Infinity
 
 module.exports = class Bugsnag
-	# Configuration
-  @filters: ["password"]
-  @notifyReleaseStages: ["production", "development"]
-  @projectRoot: path.dirname require.main.filename
-  @autoNotifyUncaught: true
-  @useSSL: true
-  @notifyHost = "notify.bugsnag.com"
-  @notifyPath = "/"
-  @notifyPort = undefined
-  
-  # Payload contents
-  @apiKey: null
-  @releaseStage: process.env.NODE_ENV || "production"
-  @appVersion: null
-  @osVersion: null
-  @metaData: {}
+  # This allows people to directly play with metadata, without knowledge of Configuration
+  Object.defineProperty @, 'metaData',
+    get: -> Configuration.metaData
+    set: (metaData) -> Configuration.metaData = metaData
 
-  @logger = new Logger()
-
-  # The callback fired when we receive an uncaught exception. Defaults to printing the stack and exiting
-  @onUncaughtException: (err) =>
-    console.error err.stack || err
-    process.exit(1)
-
+  # Register sets api key and also will configure bugsnag based on options
   @register: (apiKey, options = {}) =>
-    @apiKey = apiKey
-    
-    # Do this before we do any logging
-    @logger.logLevel = options.logLevel if options.logLevel
+    Configuration.apiKey = apiKey
+    @configure options
 
-    @logger.info "Registering with apiKey #{apiKey}"
+    Configuration.logger.info "Registered with apiKey #{apiKey}"
 
-    @releaseStage = options.releaseStage || @releaseStage
-    @appVersion = options.appVersion || @appVersion
-    @autoNotifyUncaught = if options.autoNotify? then options.autoNotify else @autoNotifyUncaught
-    @useSSL = if options.useSSL? then options.useSSL else @useSSL
-    @notifyReleaseStages = options.notifyReleaseStages || @notifyReleaseStages
-    @notifyHost = options.notifyHost || @notifyHost
-    @notifyPort = options.notifyPort || @notifyPort
-    @notifyPath = options.notifyPath || @notifyPath
-    @metaData = options.metaData || @metaData
-    
-    if options.projectRoot?
-      @projectRoot = fullPath options.projectRoot
+  @configure: (options) =>
+    Configuration.configure options
 
-    if options.packageJSON? && !@appVersion
-      @appVersion = Utils.getPackageVersion(Utils.fullPath(options.packageJSON))
-    
-    unless @appVersion
-      @appVersion = Utils.getPackageVersion(path.join(path.dirname(require.main.filename),'package.json')) || Utils.getPackageVersion(path.join(@projectRoot, 'package.json'))
-
-    if @autoNotifyUncaught
-      @logger.info "Configuring uncaughtExceptionHandler"
+    # If we should auto notify we also configure the uncaught exception handler, we can't do this
+    # by default as it changes the way the app responds by removing the default handler.
+    if Configuration.autoNotifyUncaught
+      Configuration.logger.info "Configuring uncaughtExceptionHandler"
       process.on "uncaughtException", (err) =>
         @notify err, (error, response) =>
-          @logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
-          @onUncaughtException err if @onUncaughtException
+          Configuration.logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
+          Configuration.onUncaughtException err if Configuration.onUncaughtException
 
   # Only error is required, and that can be a string or error object
-  @notify: (error, options, cb) =>
+  @notify: (error, options, cb) ->
     if Utils.typeOf(options) == "function"
       cb = options
       options = {}
 
     options ||= {}
 
-    unless @shouldNotify()
+    unless shouldNotify()
       cb() if cb
       return
 
-    @logger.info "Notifying Bugsnag of exception...\n#{error?.stack || error}"
-    bugsnagError = new (require("./error"))(error, options.errorName)
+    Configuration.logger.info "Notifying Bugsnag of exception...\n#{error?.stack || error}"
+    bugsnagError = new BugsnagError(error, options.errorName)
 
     delete options.errorName
 
-    notification = new (require("./notification"))(bugsnagError, options)
+    notification = new Notification(bugsnagError, options)
     notification.deliver cb
 
-  @shouldNotify: =>
-    @notifyReleaseStages && @notifyReleaseStages.indexOf(@releaseStage) != -1 && @apiKey
-
+  # The error handler express/connect middleware. Performs a notify
   @errorHandler: (err, req, res, next) =>
-    @logger.info "Handling express error: #{err.stack}"
+    Configuration.logger.info "Handling express error: #{err.stack}"
     @notify err, req: req
     next err
 
+  # The request middleware for express/connect. Ensures next(err) is called when there is an error, and
+  # tracks the request for manual notifies.
   @requestHandler: (req, res, next) ->
     dom = domain.create()
+    dom._bugsnagOptions = 
+      req: req
     dom.on 'error', (err) ->
       dom.dispose()
       next err
@@ -122,6 +92,7 @@ module.exports = class Bugsnag
       options = {}
 
     dom = domain.create()
+    dom._bugsnagOptions = options
     dom.on 'error', (err) =>
       dom.dispose()
       @notify err, options
@@ -130,3 +101,6 @@ module.exports = class Bugsnag
       dom.run cb
     
     return dom
+
+  shouldNotify = ->
+    Configuration.notifyReleaseStages && Configuration.notifyReleaseStages.indexOf(Configuration.releaseStage) != -1 && Configuration.apiKey

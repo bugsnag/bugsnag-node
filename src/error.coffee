@@ -1,6 +1,6 @@
 stacktrace = require "stack-trace"
 Utils = require "./utils"
-Bugsnag = require "./bugsnag"
+Configuration = require "./configuration"
 
 module.exports = class Error
   constructor: (error, errorClass) ->
@@ -14,7 +14,7 @@ module.exports = class Error
     callSites = stacktrace.parse error
     callSites = stacktrace.get() if callSites.length == 0
 
-    @stacktrace = processCallSites(callSites)
+    @stacktrace = processCallSites(callSites, Configuration.projectRoot)
 
   processCallSites = (callSites) ->
     return callSites.map (callSite) ->
@@ -24,9 +24,9 @@ module.exports = class Error
         lineNumber: callSite.getLineNumber()
         columnNumber: callSite.getColumnNumber()
 
-      if Bugsnag.projectRoot? && callSite.getFileName()?.indexOf(Bugsnag.projectRoot) == 0
+      if Configuration.projectRoot? && callSite.getFileName()?.indexOf(Configuration.projectRoot) == 0
         frame.inProject = callSite.getFileName().indexOf("node_modules") == -1
         delete frame.inProject unless frame.inProject
-        frame.file = frame.file.substr(Bugsnag.projectRoot.length + 1)
+        frame.file = frame.file.substr(Configuration.projectRoot.length + 1)
 
       return frame
