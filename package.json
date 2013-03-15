@@ -1,14 +1,36 @@
 {
   "name": "bugsnag",
   "description": "Bugsnag notifier for node.js scripts",
-  "version": "0.1.14",
+  "version": "1.0.0-rc1",
   "main": "./lib/bugsnag.js",
   "homepage": "http://bugsnag.com",
   "dependencies": {
-    "tracejs": ">=0.1.0"
+    "stack-trace": ">=0.0.6"
+  },
+  "devDependencies" : {
+    "mocha": "~1.8.0",
+    "chai": "~1.5.0",
+    "coffee-script": "latest",
+    "sinon": "latest",
+    "grunt": "~0.4.0",
+    "grunt-contrib-coffee": "~0.4.0",
+    "grunt-mocha-test": "latest",
+    "grunt-bumpx": "~0.1.0"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:bugsnag/bugsnag-node.git"
+  },
+  "keywords": [
+    "error",
+    "bugsnag",
+    "exception"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha"
+  },
+  "engine": {
+    "node": ">=0.8"
   }
 }
