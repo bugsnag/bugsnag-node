@@ -36,7 +36,7 @@ module.exports = (grunt) ->
     exec = require("child_process").exec
     done = this.async()
     releaseVersion = grunt.template.process("<%= pkg.version %>")
-
+    console.log "git ci -am \"v#{releaseVersion}\" && git tag v#{releaseVersion}"
     child = exec "git ci -am \"v#{releaseVersion}\" && git tag v#{releaseVersion}", (error, stdout, stderr) ->
       console.log("Error running git tag: " + error) if error?
       done(!error?)
