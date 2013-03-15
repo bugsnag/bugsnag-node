@@ -27,6 +27,10 @@ module.exports = class Notification
       @processRequest event, options.req || process?.domain?._bugsnagOptions?.req
       delete options.req
 
+    if process?.domain?._bugsnagOptions
+      domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, ["req", "context", "userId"])
+      Utils.mergeObjects event.metaData ||= {}, domainOptions if Object.keys(domainOptions).length > 0
+    
     Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0
 
     @apiKey = Configuration.apiKey

@@ -24,12 +24,12 @@ module.exports = class Utils
   @fullPath: (unknownPath) ->
     if unknownPath.indexOf(path.sep) == 0 then unknownPath else path.join(__dirname, unknownPath)
 
-  @cloneObject: (obj) ->
+  @cloneObject: (obj, except = []) ->
     return obj unless obj && @typeOf(obj) == "object"
     copy = obj.constructor()
     
     for key in Object.keys(obj)
-      if obj.hasOwnProperty key
+      if obj.hasOwnProperty(key) && except.indexOf(key) == -1
         if @typeOf(obj[key]) == "object"
           copy[key] = @cloneObject obj[key]
         else

@@ -43,6 +43,17 @@ describe "utils", ->
       clone.should.have.property("firstKey", "firstValue")
       clone.should.have.property("secondKey", "secondValue")
 
+    it "should return an object without the except properties", ->
+      original = 
+        firstKey: "firstValue"
+        secondKey: "secondValue"
+
+      clone = Utils.cloneObject original, ["secondKey"]
+
+      should.exist(clone)
+      clone.should.have.keys(["firstKey"])
+      clone.should.have.property("firstKey", "firstValue")
+
     it "should do a recursive clone", ->
       original = 
         firstObject: 

@@ -23,6 +23,7 @@ module.exports = class Bugsnag
 
     Configuration.logger.info "Registered with apiKey #{apiKey}"
 
+  # Configure bugsnag using the provided options
   @configure: (options) =>
     Configuration.configure options
 
