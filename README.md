@@ -18,7 +18,7 @@ npm install bugsnag --save
 Require bugsnag in your node.js app:
 
 ```javascript
-bugsnag = require("bugsnag");
+var bugsnag = require("bugsnag");
 ```
 
 Register the bugsnag notifier with your API key:
