@@ -58,7 +58,7 @@ module.exports = class Bugsnag
 
   # The error handler express/connect middleware. Performs a notify
   @errorHandler: (err, req, res, next) =>
-    Configuration.logger.info "Handling express error: #{err.stack}"
+    Configuration.logger.info "Handling express error: #{err.stack || err}"
     @notify err, req: req
     next err
 

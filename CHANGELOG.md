@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0.0-rc1
+---------
+
+-   Complete rewrite using domains to track requests and other metadata.
+
 0.1.14
 ------
 
