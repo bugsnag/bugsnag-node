@@ -26,7 +26,7 @@ module.exports = class Configuration
 
   # The callback fired when we receive an uncaught exception. Defaults to printing the stack and exiting
   @onUncaughtException: (err) =>
-    console.error err.stack || err
+    @logger.error err.stack || err
     process.exit(1) if @exitOnUncaught
 
   @configure: (options) =>
