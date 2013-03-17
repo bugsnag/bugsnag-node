@@ -28,7 +28,7 @@ module.exports = class Notification
       delete options.req
 
     if process?.domain?._bugsnagOptions
-      domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, ["req", "context", "userId"])
+      domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, except: ["req", "context", "userId"])
       Utils.mergeObjects event.metaData ||= {}, domainOptions if Object.keys(domainOptions).length > 0
     
     Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0
@@ -50,7 +50,14 @@ module.exports = class Notification
     port = Configuration.notifyPort || (if Configuration.useSSL then 443 else 80)
     Configuration.logger.info "Delivering exception to #{if Configuration.useSSL then "https" else "http"}://#{Configuration.notifyHost}:#{port}#{Configuration.notifyPath}"
 
-    payload = JSON.stringify @
+    # We stringify, ignoring any circular structures
+    cache = []
+    payload = JSON.stringify @, (key, value) ->
+      if Utils.typeOf(value) == "object"
+        return if cache.indexOf(value) != -1
+        cache.push(value)
+      return value
+
     options =
       host: Configuration.notifyHost
       port: port

@@ -48,7 +48,7 @@ describe "utils", ->
         firstKey: "firstValue"
         secondKey: "secondValue"
 
-      clone = Utils.cloneObject original, ["secondKey"]
+      clone = Utils.cloneObject original, except: ["secondKey"]
 
       should.exist(clone)
       clone.should.have.keys(["firstKey"])
@@ -108,6 +108,18 @@ describe "utils", ->
       clone.firstObject.secondObject.should.have.keys(["thirdObject"])
       clone.firstObject.secondObject.should.have.property("thirdObject", "thirdValue")
 
+    it "should deal with circular references", ->
+      original = 
+        firstKey: "firstValue"
+
+      original.secondKey = original
+
+      clone = Utils.cloneObject original
+
+      should.exist(clone)
+      clone.should.have.keys("firstKey", "secondKey")
+      clone.secondKey.should.be.an("object")
+
   describe "mergeObjects", ->
     it "should perform a basic merge", ->
       destination =
@@ -138,7 +150,6 @@ describe "utils", ->
       destination.should.have.property("firstKey", "firstValue")
       destination.should.have.property("secondKey", "secondValue")
 
-
     it "should do a recursive merge", ->
       destination =
         firstKey: "firstValue"
@@ -168,6 +179,24 @@ describe "utils", ->
 
       destination.firstObject.secondObject.should.have.keys(["thirdKey"])
       destination.firstObject.secondObject.should.have.property("thirdKey", "thirdValueChanged")
+
+    it "should deal with circular references", ->
+      destination = 
+        firstKey: "firstValue"
+        thidKey: "thirdValue"
+
+      destination.secondKey = destination
+
+      source = 
+        firstKey: "firstValueChanged"
+
+      source.secondKey = source
+
+      Utils.mergeObjects destination, source
+
+      should.exist(destination)
+      destination.should.have.keys("firstKey", "secondKey", "thidKey")
+      destination.secondKey.should.be.an("object")
   
   describe "filterObject", ->
     it "should filter base keys", ->
@@ -204,3 +233,29 @@ describe "utils", ->
       testObject.firstObject.secondObject.should.have.keys(["thirdKey", "thirdObject"])
       testObject.firstObject.secondObject.should.have.property("thirdKey", "[FILTERED]")
       testObject.firstObject.secondObject.should.have.property("thirdObject", "[FILTERED]")
+
+    it "should deal with circular references", ->
+      original = 
+        firstKey: "firstValue"
+        thirdKey: "thirdValue"
+
+      original.secondKey = original
+
+      Utils.filterObject original
+
+      should.exist(original)
+      original.should.have.keys("firstKey", "secondKey", "thirdKey")
+      original.secondKey.should.be.an("object")
+
+    it "should deal with circular references", ->
+      original = 
+        firstKey: "firstValue"
+        thirdKey: "thirdValue"
+
+      original.secondKey = original
+
+      Utils.filterObject original, ["thirdKey"]
+
+      should.exist(original)
+      original.should.have.keys("firstKey", "secondKey", "thirdKey")
+      original.secondKey.should.be.an("object")
