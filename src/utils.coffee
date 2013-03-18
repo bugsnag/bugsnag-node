@@ -34,9 +34,10 @@ module.exports = class Utils
     for key in Object.keys(obj)
       val = obj[key]
       if obj.hasOwnProperty(key) && except.indexOf(key) == -1
-        if @typeOf(val) == "object" && alreadyCloned.indexOf(val) == -1
-          alreadyCloned.push(val)
-          copy[key] = @cloneObject val, alreadyCloned: alreadyCloned
+        if @typeOf(val) == "object"
+          if alreadyCloned.indexOf(val) == -1
+            alreadyCloned.push(val)
+            copy[key] = @cloneObject val, alreadyCloned: alreadyCloned
         else
           copy[key] = val
     return copy
@@ -48,9 +49,10 @@ module.exports = class Utils
     for key in Object.keys(source)
       if source.hasOwnProperty key
         val = source[key]
-        if @typeOf(val) == "object" && dest[key] && alreadyMerged.indexOf(val) == -1
-          alreadyMerged.push(val)
-          @mergeObjects dest[key], val, alreadyMerged: alreadyMerged
+        if @typeOf(val) == "object" && dest[key]
+          if alreadyMerged.indexOf(val) == -1
+            alreadyMerged.push(val)
+            @mergeObjects dest[key], val, alreadyMerged: alreadyMerged
         else
           dest[key] = source[key]
     return dest
