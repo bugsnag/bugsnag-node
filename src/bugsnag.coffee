@@ -11,6 +11,8 @@ Notification = require "./notification"
 Error.stackTraceLimit = Infinity
 
 module.exports = class Bugsnag
+  unCaughtErrorHandlerAdded = false
+
   # This allows people to directly play with metadata, without knowledge of Configuration
   Object.defineProperty @, 'metaData',
     get: -> Configuration.metaData
@@ -29,12 +31,11 @@ module.exports = class Bugsnag
 
     # If we should auto notify we also configure the uncaught exception handler, we can't do this
     # by default as it changes the way the app responds by removing the default handler.
-    if Configuration.autoNotifyUncaught
+    if Configuration.autoNotifyUncaught && !unCaughtErrorHandlerAdded
+      unCaughtErrorHandlerAdded = true
       Configuration.logger.info "Configuring uncaughtExceptionHandler"
       process.on "uncaughtException", (err) =>
-        @notify err, (error, response) =>
-          Configuration.logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
-          Configuration.onUncaughtException err if Configuration.onUncaughtException
+        @notify err, autoNotifyCallback
 
   # Only error is required, and that can be a string or error object
   @notify: (error, options, cb) ->
@@ -69,8 +70,7 @@ module.exports = class Bugsnag
     dom._bugsnagOptions = 
       req: req
     dom.on 'error', (err) ->
-      dom.dispose()
-      next err
+      @notify err, autoNotifyCallback
     dom.run next
 
   # Intercepts the first argument from a callback and interprets it at as error.
@@ -81,7 +81,8 @@ module.exports = class Bugsnag
       return process.domain.intercept cb
     else
       return (err, args...) =>
-        return @notify(err) if err
+        if err && (err instanceof Error)
+          return @notify err, autoNotifyCallback
         cb(args...) if cb
 
   # Automatically notifies of uncaught exceptions in the callback and error
@@ -95,8 +96,7 @@ module.exports = class Bugsnag
     dom = domain.create()
     dom._bugsnagOptions = options
     dom.on 'error', (err) =>
-      dom.dispose()
-      @notify err, options
+      @notify err, options, autoNotifyCallback
     
     process.nextTick ->
       dom.run cb
@@ -105,3 +105,7 @@ module.exports = class Bugsnag
 
   shouldNotify = ->
     Configuration.notifyReleaseStages && Configuration.notifyReleaseStages.indexOf(Configuration.releaseStage) != -1 && Configuration.apiKey
+
+  autoNotifyCallback = (error, response) ->
+    Configuration.logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
+    Configuration.onUncaughtError err if Configuration.onUncaughtError

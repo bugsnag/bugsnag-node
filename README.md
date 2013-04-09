@@ -177,6 +177,18 @@ By default, errors will be sent to Bugsnag using SSL. To disable SSL, you can se
 bugsnag.register("your-api-key-here", { useSSL: false });
 ```
 
+### onUncaughtError
+
+By default, bugsnag will exit your application if there is an uncaught exception or an uncaught event emitter "error" event. This is in line with standard node.js behaviour. If you want to have different behaviour, then please set onUncaughtError as follows,
+
+```javascript
+bugsnag.register("your-api-key-here", { onUncaughtError: function(error){
+  console.error(err.stack || err);
+}});
+```
+
+This function is called for all errors that aren't manually sent to bugsnag.notify. So a bugsnag.intercept call will trigger a call to onUncaughtError.
+
 ### metaData
 
 It is often very useful to send some extra application or user specific data along with every exception. To do this, you can set the `metaData`:
