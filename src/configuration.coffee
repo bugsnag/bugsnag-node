@@ -6,7 +6,7 @@ Utils = require "./utils"
 module.exports = class Configuration
   # Configuration
   @filters: ["password"]
-  @notifyReleaseStages: ["production", "development"]
+  @notifyReleaseStages: null
   @projectRoot: path.dirname require.main.filename
   @autoNotifyUncaught: true
   @useSSL: true

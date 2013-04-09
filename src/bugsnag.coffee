@@ -104,7 +104,7 @@ module.exports = class Bugsnag
     return dom
 
   shouldNotify = ->
-    Configuration.notifyReleaseStages && Configuration.notifyReleaseStages.indexOf(Configuration.releaseStage) != -1 && Configuration.apiKey
+    ( Configuration.notifyReleaseStages == null || Configuration.notifyReleaseStages.indexOf(Configuration.releaseStage) != -1 ) && Configuration.apiKey
 
   autoNotifyCallback = (error, response) ->
     Configuration.logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
