@@ -65,7 +65,7 @@ module.exports = class Bugsnag
 
   # The request middleware for express/connect. Ensures next(err) is called when there is an error, and
   # tracks the request for manual notifies.
-  @requestHandler: (req, res, next) =>
+  @requestHandler: (req, res, next) ->
     dom = domain.create()
     dom._bugsnagOptions = 
       req: req
@@ -105,7 +105,7 @@ module.exports = class Bugsnag
   shouldNotify = ->
     ( Configuration.notifyReleaseStages == null || Configuration.notifyReleaseStages.indexOf(Configuration.releaseStage) != -1 ) && Configuration.apiKey
 
-  autoNotifyCallback = (notifiedError, uncaught = false) ->
+  autoNotifyCallback = (notifiedError, uncaughtError = notifiedError.domain) ->
     (error) ->
       Configuration.logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
-      Configuration.onUncaughtError(notifiedError) if Configuration.onUncaughtError && (notifiedError.domain || uncaught)
+      Configuration.onUncaughtError(notifiedError) if Configuration.onUncaughtError && uncaughtError
