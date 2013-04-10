@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.1
+-----
+-   Improve query string and express app processing.
+
 1.0.0
 -----
 -   Exit on fatal errors by default, and allow people more control, by using onUncaughtError

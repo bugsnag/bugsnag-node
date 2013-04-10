@@ -93,8 +93,13 @@ module.exports = class Notification
 
   processRequest: (event, req) ->
     event.metaData ||= {}
+    
+    portNumber = req.connection?.address()?.port
+    port = if !portNumber? || portNumber == 80 || portNumber == 443 then '' else ':' + portNumber 
+    full_url = req.protocol + '://' + req.host  + port + req.url
+
     event.metaData.request =
-      url: req.url
+      url: full_url
       method: req.method
       headers: req.headers
       httpVersion: req.httpVersion
@@ -103,9 +108,13 @@ module.exports = class Notification
         remotePort: req.connection?.remotePort
         bytesRead: req.connection?.bytesRead
         bytesWritten: req.connection?.bytesWritten
-        localPort: req.connection?.address()?.port
+        localPort: portNumber
         localAddress: req.connection?.address()?.address
         IPVersion: req.connection?.address()?.family
 
-     event.context ||= req.url
-     event.userId ||= req?.headers?["x-forwarded-for"] || req.connection?.remoteAddress
+    event.metaData.request.params = req.params if req.params && Object.keys(req.params).length > 0
+    event.metaData.request.query = req.query if req.query && Object.keys(req.query).length > 0
+    event.metaData.request.body = req.body if req.body && Object.keys(req.body).length > 0
+
+    event.context ||= req.path || req.url
+    event.userId ||= req?.headers?["x-forwarded-for"] || req.connection?.remoteAddress
