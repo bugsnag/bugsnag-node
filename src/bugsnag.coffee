@@ -35,7 +35,7 @@ module.exports = class Bugsnag
       unCaughtErrorHandlerAdded = true
       Configuration.logger.info "Configuring uncaughtExceptionHandler"
       process.on "uncaughtException", (err) =>
-        @notify err, autoNotifyCallback
+        @notify err, autoNotifyCallback(err, true)
 
   # Only error is required, and that can be a string or error object
   @notify: (error, options, cb) ->
@@ -60,17 +60,16 @@ module.exports = class Bugsnag
   # The error handler express/connect middleware. Performs a notify
   @errorHandler: (err, req, res, next) =>
     Configuration.logger.info "Handling express error: #{err.stack || err}"
-    @notify err, req: req
+    @notify err, {req: req}, autoNotifyCallback(err)
     next err
 
   # The request middleware for express/connect. Ensures next(err) is called when there is an error, and
   # tracks the request for manual notifies.
-  @requestHandler: (req, res, next) ->
+  @requestHandler: (req, res, next) =>
     dom = domain.create()
     dom._bugsnagOptions = 
       req: req
-    dom.on 'error', (err) ->
-      @notify err, autoNotifyCallback
+    dom.on 'error', next
     dom.run next
 
   # Intercepts the first argument from a callback and interprets it at as error.
@@ -82,7 +81,7 @@ module.exports = class Bugsnag
     else
       return (err, args...) =>
         if err && (err instanceof Error)
-          return @notify err, autoNotifyCallback
+          return @notify err, autoNotifyCallback(err)
         cb(args...) if cb
 
   # Automatically notifies of uncaught exceptions in the callback and error
@@ -96,7 +95,7 @@ module.exports = class Bugsnag
     dom = domain.create()
     dom._bugsnagOptions = options
     dom.on 'error', (err) =>
-      @notify err, options, autoNotifyCallback
+      @notify err, options, autoNotifyCallback(err)
     
     process.nextTick ->
       dom.run cb
@@ -106,6 +105,7 @@ module.exports = class Bugsnag
   shouldNotify = ->
     ( Configuration.notifyReleaseStages == null || Configuration.notifyReleaseStages.indexOf(Configuration.releaseStage) != -1 ) && Configuration.apiKey
 
-  autoNotifyCallback = (error, response) ->
-    Configuration.logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
-    Configuration.onUncaughtError err if Configuration.onUncaughtError
+  autoNotifyCallback = (notifiedError, uncaught = false) ->
+    (error) ->
+      Configuration.logger.error "Bugsnag: error notifying bugsnag.com - #{error}" if error
+      Configuration.onUncaughtError(notifiedError) if Configuration.onUncaughtError && (notifiedError.domain || uncaught)

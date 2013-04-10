@@ -24,16 +24,18 @@ module.exports = class Configuration
 
   # The callback fired when we receive an uncaught exception. Defaults to printing the stack and exiting
   @onUncaughtError: (err) =>
-    @logger.error err.stack || err
     if (err instanceof Error) && err.domain
-      process.exit(1) if err.domainThrown || err.domainEmitter
+      if err.domainThrown || err.domainEmitter
+        @logger.error err.stack || err
+        process.exit(1)
     else
+      @logger.error err.stack || err
       process.exit(1)
 
   @configure: (options) =>
     # Do this before we do any logging
-    @logger.logLevel = options.logLevel if options.logLevel
     @logger = options.logger if options.logger
+    @logger.logLevel = options.logLevel if options.logLevel
 
     @releaseStage = options.releaseStage || @releaseStage
     @appVersion = options.appVersion || @appVersion
@@ -44,7 +46,6 @@ module.exports = class Configuration
     @notifyPort = options.notifyPort || @notifyPort
     @notifyPath = options.notifyPath || @notifyPath
     @metaData = options.metaData || @metaData
-    @onUncaughtError = options.onUncaughtError || @onUncaughtError
     
     if options.projectRoot?
       @projectRoot = Utils.fullPath options.projectRoot

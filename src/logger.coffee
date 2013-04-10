@@ -1,7 +1,7 @@
 module.exports = class Logger
   LOG_PREFIX = "Bugsnag"
 
-  @logLevel = "error"
+  constructor: (@logLevel = "error") ->
 
   info: (output...) =>
     console.log "#{LOG_PREFIX}: ", output... if @logLevel == "info"
