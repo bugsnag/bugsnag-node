@@ -46,6 +46,7 @@ module.exports = class Configuration
     @notifyPort = options.notifyPort || @notifyPort
     @notifyPath = options.notifyPath || @notifyPath
     @metaData = options.metaData || @metaData
+    @onUncaughtError = options.metaData || @onUncaughtError
     
     if options.projectRoot?
       @projectRoot = Utils.fullPath options.projectRoot
