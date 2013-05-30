@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.2
+-----
+-   Fix bug with onUncaughtException not pulled from options properly
+
 1.0.1
 -----
 -   Improve query string and express app processing.
