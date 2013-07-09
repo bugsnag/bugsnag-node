@@ -25,7 +25,8 @@ module.exports = class Configuration
   # The callback fired when we receive an uncaught exception. Defaults to printing the stack and exiting
   @onUncaughtError: (err) =>
     if (err instanceof Error) && err.domain
-      if err.domainThrown || err.domainEmitter
+      # 0.8 doesn't support these attributes, so if they are undefined we have to exit anyway
+      if err.domainThrown || err.domainEmitter || err.domainThrown == undefined
         @logger.error err.stack || err
         process.exit(1)
     else
