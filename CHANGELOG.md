@@ -3,7 +3,7 @@ Changelog
 
 1.1.0
 -----
-- 	Allow groupingHash to be configured by users to change grouping programmatically.
+- 	To allow groupingHash to be configured by users to change grouping programmatically.
 
 1.0.3
 -----
