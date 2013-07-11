@@ -15,12 +15,14 @@ module.exports = class Notification
 
     event.userId = options.userId || process?.domain?._bugsnagOptions?.userId if options.userId || process?.domain?._bugsnagOptions?.userId
     event.context = options.context || process?.domain?._bugsnagOptions?.context if options.context || process?.domain?._bugsnagOptions?.context
+    event.groupingHash = options.groupingHash || process?.domain?._bugsnagOptions?.groupingHash if options.groupingHash || process?.domain?._bugsnagOptions?.groupingHash
 
     event.appVersion = Configuration.appVersion if Configuration.appVersion
     event.releaseStage = Configuration.releaseStage if Configuration.releaseStage
 
     delete options.userId
     delete options.context
+    delete options.groupingHash
     event.metaData = Utils.cloneObject Configuration.metaData if Configuration.metaData && Object.keys(Configuration.metaData).length > 0
 
     if options.req || process?.domain?._bugsnagOptions?.req
@@ -28,7 +30,7 @@ module.exports = class Notification
       delete options.req
 
     if process?.domain?._bugsnagOptions
-      domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, except: ["req", "context", "userId"])
+      domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, except: ["req", "context", "userId", "groupingHash"])
       Utils.mergeObjects event.metaData ||= {}, domainOptions if Object.keys(domainOptions).length > 0
     
     Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0

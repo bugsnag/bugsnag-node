@@ -62,6 +62,12 @@ describe "Notification", ->
 
       deliverStub.firstCall.thisValue.events[0].context.should.equal "TempContext"
 
+  describe "groupingHash", ->
+    it "should send an groupingHash when passed as option to notify", ->
+      Bugsnag.notify("This is the message", groupingHash: "groupingHashHere")
+
+      deliverStub.firstCall.thisValue.events[0].groupingHash.should.equal "groupingHashHere"
+
   describe "appVersion", ->
     it "should send an appVersion when configured on Bugsnag", ->
       Bugsnag.configure appVersion: "BugsnagVersion"
