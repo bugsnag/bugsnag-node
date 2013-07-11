@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.0
+-----
+- 	To allow groupingHash to be configured by users to change grouping programmatically.
+
+1.0.3
+-----
+- 	Fix node 0.8 bug where error.domainThrown is not supported.
+
 1.0.2
 -----
 -   Fix bug with onUncaughtException not pulled from options properly
