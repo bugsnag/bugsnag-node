@@ -234,6 +234,14 @@ A unique identifier for a user affected by this error. This could be any distinc
 bugsnag.notify(new Error("Something went badly wrong"), { userId: "bob-hoskins" });
 ```
 
+### groupingHash
+
+If you need programmatical control over how the errors are grouped within bugsnag, you can send a groupingHash to the notify call. This will ensure that bugsnag groups all errors with the same groupingHash together.
+
+```javascript
+bugsnag.notify(error, { groupingHash: "auth/create" });
+```
+
 ### metaData
 
 Any extra data you want along with the exception report to Bugsnag. To do this just set other properties on the object, and you will see them as tabs in the error dashboard.
