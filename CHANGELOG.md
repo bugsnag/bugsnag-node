@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.1.1
+-----
+-   Fix require.main.filename crash when requiring bugsnag from within cli.
+
 1.1.0
 -----
 - 	To allow groupingHash to be configured by users to change grouping programmatically.
