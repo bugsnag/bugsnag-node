@@ -7,7 +7,7 @@ module.exports = class Configuration
   # Configuration
   @filters: ["password"]
   @notifyReleaseStages: null
-  @projectRoot: path.dirname require.main.filename
+  @projectRoot: path.dirname require?.main?.filename
   @autoNotifyUncaught: true
   @useSSL: true
   @notifyHost = "notify.bugsnag.com"
