@@ -1,6 +1,7 @@
 Utils = require "./utils"
 Logger = require "./logger"
 Configuration = require "./configuration"
+requestInfo = require "./request_info"
 path = require "path"
 
 module.exports = class Notification
@@ -25,9 +26,12 @@ module.exports = class Notification
     delete options.groupingHash
     event.metaData = Utils.cloneObject Configuration.metaData if Configuration.metaData && Object.keys(Configuration.metaData).length > 0
 
-    if options.req || process?.domain?._bugsnagOptions?.req
-      @processRequest event, options.req || process?.domain?._bugsnagOptions?.req
+    if options.req
+      @processRequest event, requestInfo(options.req)
       delete options.req
+    else if process?.domain?._bugsnagOptions?.cleanedRequest
+      @processRequest event, process.domain._bugsnagOptions.cleanedRequest
+
 
     if process?.domain?._bugsnagOptions
       domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, except: ["req", "context", "userId", "groupingHash"])
@@ -93,30 +97,10 @@ module.exports = class Notification
     req.write payload, "utf-8"
     req.end()
 
-  processRequest: (event, req) ->
+  processRequest: (event, cleanRequest) ->
     event.metaData ||= {}
-    
-    portNumber = req.connection?.address()?.port
-    port = if !portNumber? || portNumber == 80 || portNumber == 443 then '' else ':' + portNumber 
-    full_url = req.protocol + '://' + req.host  + port + req.url
 
-    event.metaData.request =
-      url: full_url
-      method: req.method
-      headers: req.headers
-      httpVersion: req.httpVersion
-      connection:
-        remoteAddress: req.connection?.remoteAddress
-        remotePort: req.connection?.remotePort
-        bytesRead: req.connection?.bytesRead
-        bytesWritten: req.connection?.bytesWritten
-        localPort: portNumber
-        localAddress: req.connection?.address()?.address
-        IPVersion: req.connection?.address()?.family
+    event.metaData.request = cleanRequest
 
-    event.metaData.request.params = req.params if req.params && Object.keys(req.params).length > 0
-    event.metaData.request.query = req.query if req.query && Object.keys(req.query).length > 0
-    event.metaData.request.body = req.body if req.body && Object.keys(req.body).length > 0
-
-    event.context ||= req.path || req.url
-    event.userId ||= req?.headers?["x-forwarded-for"] || req.connection?.remoteAddress
+    event.context ||= cleanRequest.path || cleanRequest.url
+    event.userId ||= cleanRequest?.headers?["x-forwarded-for"] || cleanRequest?.connection?.remoteAddress
