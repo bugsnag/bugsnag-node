@@ -287,6 +287,24 @@ Contributing
 -   [Make a pull request](https://help.github.com/articles/using-pull-requests)
 -   Thanks!
 
+Releasing
+---------
+
+Ensure all the coffee-script is compiled, and the tests pass:
+
+    grunt
+
+Bump the version number
+
+    grunt bump
+
+Push tag to github
+
+    grunt release
+
+Push code to npm
+
+    npm publish
 
 License
 -------
