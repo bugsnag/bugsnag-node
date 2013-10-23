@@ -1,37 +1,37 @@
 {
-  "name": "bugsnag",
-  "description": "Bugsnag notifier for node.js scripts",
-  "version": "1.1.1",
-  "main": "./lib/bugsnag.js",
-  "homepage": "http://bugsnag.com",
-  "dependencies": {
-    "stack-trace": ">=0.0.6"
-  },
-  "devDependencies": {
-    "mocha": "~1.8.0",
-    "chai": "~1.5.0",
-    "coffee-script": "latest",
-    "sinon": "latest",
-    "grunt": "~0.4.0",
-    "grunt-contrib-coffee": "~0.4.0",
-    "grunt-mocha-test": "latest",
-    "grunt-bumpx": "~0.1.0",
-    "express": "~3.4.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:bugsnag/bugsnag-node.git"
-  },
-  "keywords": [
-    "error",
-    "bugsnag",
-    "exception"
-  ],
-  "license": "MIT",
-  "scripts": {
-    "test": "mocha"
-  },
-  "engine": {
-    "node": ">=0.8"
-  }
+    "name": "bugsnag",
+    "description": "Bugsnag notifier for node.js scripts",
+    "version": "1.1.2",
+    "main": "./lib/bugsnag.js",
+    "homepage": "http://bugsnag.com",
+    "dependencies": {
+        "stack-trace": ">=0.0.6"
+    },
+    "devDependencies": {
+        "mocha": "~1.8.0",
+        "chai": "~1.5.0",
+        "coffee-script": "latest",
+        "sinon": "latest",
+        "grunt": "~0.4.0",
+        "grunt-contrib-coffee": "~0.4.0",
+        "grunt-mocha-test": "latest",
+        "grunt-bumpx": "~0.1.0",
+        "express": "~3.4.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:bugsnag/bugsnag-node.git"
+    },
+    "keywords": [
+        "error",
+        "bugsnag",
+        "exception"
+    ],
+    "license": "MIT",
+    "scripts": {
+        "test": "mocha"
+    },
+    "engine": {
+        "node": ">=0.8"
+    }
 }
