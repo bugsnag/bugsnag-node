@@ -26,7 +26,7 @@ module.exports = class Notification
     delete options.groupingHash
     event.metaData = Utils.cloneObject Configuration.metaData if Configuration.metaData && Object.keys(Configuration.metaData).length > 0
 
-    if options.req || process?.domain?._bugsnagOptions?.req
+    if options.req
       @processRequest event, requestInfo(options.req)
       delete options.req
     else if process?.domain?._bugsnagOptions?.cleanedRequest
