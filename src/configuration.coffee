@@ -15,7 +15,7 @@ module.exports = class Configuration
   @notifyPort = undefined
   
   # Payload contents
-  @apiKey: null
+  @apiKey: process.env.BUGSNAG_API_KEY
   @releaseStage: process.env.NODE_ENV || "production"
   @appVersion: null
   @metaData: {}
