@@ -24,6 +24,7 @@ module.exports = class Notification
     delete options.context
     delete options.groupingHash
     event.metaData = Utils.cloneObject Configuration.metaData if Configuration.metaData && Object.keys(Configuration.metaData).length > 0
+    event.device = {hostname: Configuration.hostname} if Configuration.hostname
 
     if options.req || process?.domain?._bugsnagOptions?.req
       @processRequest event, options.req || process?.domain?._bugsnagOptions?.req
