@@ -7,7 +7,7 @@ module.exports = class Logger
     console.log "#{LOG_PREFIX}: ", output... if @logLevel == "info"
 
   warn: (output...) =>
-    console.log "#{LOG_PREFIX}: ", output... if @logLevel == "warn" || @logLevel == "log"
+    console.log "#{LOG_PREFIX}: ", output... if @logLevel == "warn" || @logLevel == "info"
 
   error: (output...) =>
     console.error "#{LOG_PREFIX}: ", output... if @logLevel?

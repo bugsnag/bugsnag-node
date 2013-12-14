@@ -13,6 +13,7 @@ module.exports = class Configuration
   @notifyHost = "notify.bugsnag.com"
   @notifyPath = "/"
   @notifyPort = undefined
+  @hostname = if process.env.DYNO then null else require("os").hostname()
   
   # Payload contents
   @apiKey: process.env.BUGSNAG_API_KEY
@@ -48,6 +49,7 @@ module.exports = class Configuration
     @notifyPath = options.notifyPath || @notifyPath
     @metaData = options.metaData || @metaData
     @onUncaughtError = options.onUncaughtError || @onUncaughtError
+    @hostname = options.hostname || @hostname
     
     if options.projectRoot?
       @projectRoot = Utils.fullPath options.projectRoot

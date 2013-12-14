@@ -48,7 +48,7 @@ describe "Notification", ->
     Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.events.length.should.equal 1
-    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions")
+    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device")
 
   describe "userId", ->
     it "should send a userId when passed as option to notify", ->
@@ -61,6 +61,11 @@ describe "Notification", ->
       Bugsnag.notify("This is the message", context: "TempContext")
 
       deliverStub.firstCall.thisValue.events[0].context.should.equal "TempContext"
+
+  describe "hostname", ->
+    it "should send the hostname", ->
+      Bugsnag.notify("Foo")
+      deliverStub.firstCall.thisValue.events[0].device.hostname.should.equal require('os').hostname()
 
   describe "groupingHash", ->
     it "should send an groupingHash when passed as option to notify", ->
