@@ -62,6 +62,11 @@ describe "Notification", ->
 
       deliverStub.firstCall.thisValue.events[0].context.should.equal "TempContext"
 
+  describe "hostname", ->
+    it "should send the hostname", ->
+      Bugsnag.notify("Foo")
+      deliverStub.firstCall.thisValue.events[0].device.hostname.should.equal require('os').hostname()
+
   describe "groupingHash", ->
     it "should send an groupingHash when passed as option to notify", ->
       Bugsnag.notify("This is the message", groupingHash: "groupingHashHere")
