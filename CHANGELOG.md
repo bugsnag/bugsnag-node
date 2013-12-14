@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.1.4
+-----
+-   Send hostname to Bugsnag
+
 1.1.1
 -----
 -   Fix require.main.filename crash when requiring bugsnag from within cli.
