@@ -4,10 +4,17 @@ module.exports = class Logger
   constructor: (@logLevel = "error") ->
 
   info: (output...) =>
-    console.log "#{LOG_PREFIX}: ", output... if @logLevel == "info"
+    try
+      console.log "#{LOG_PREFIX}: ", output... if @logLevel == "info"
+    catch e
 
   warn: (output...) =>
-    console.log "#{LOG_PREFIX}: ", output... if @logLevel == "warn" || @logLevel == "info"
+    try
+      console.log "#{LOG_PREFIX}: ", output... if @logLevel == "warn" || @logLevel == "info"
+    catch e
 
   error: (output...) =>
-    console.error "#{LOG_PREFIX}: ", output... if @logLevel?
+    try
+      console.error "#{LOG_PREFIX}: ", output... if @logLevel?
+    catch e
+
