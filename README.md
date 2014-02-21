@@ -47,6 +47,26 @@ You'll also need to add Bugsnag's error handling middleware, make sure to add th
 app.use(bugsnag.errorHandler);
 ```
 
+Using Restify
+-------------
+
+If your app uses [Restify](), Bugsnag can automatically capture errors that happen during requests.
+
+To get notified of the errors in your app, just add the Bugsnag restify handler to your code.
+
+```javascript
+server.on("uncaughtException", bugsnag.restifyHandler);
+```
+
+If you don't use any other uncaughtException event listeners, you will need to add the default handler
+back in, like this.
+
+```javascript
+server.on("uncaughtException", function (req, res, route, e) {
+  if (!res._headerSent) res.send(new restify.InternalError(e, e.message || 'unexpected error'));
+});
+```
+
 
 Using Coffeescript
 ------------------
