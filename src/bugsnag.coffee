@@ -72,6 +72,8 @@ module.exports = class Bugsnag
     dom.on 'error', next
     dom.run next
 
+  @restifyHandler: (req, res, route, err) => @notify(err, {req: req})
+
   # Intercepts the first argument from a callback and interprets it at as error.
   # if the error is not null it notifies bugsnag and doesn't call the callback 
   @intercept: (cb) =>

@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.2.0
+-----
+-   Add restify support
+
 1.1.4
 -----
 -   Send hostname to Bugsnag
