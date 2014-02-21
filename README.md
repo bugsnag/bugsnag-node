@@ -50,7 +50,7 @@ app.use(bugsnag.errorHandler);
 Using Restify
 -------------
 
-If your app uses [Restify](), Bugsnag can automatically capture errors that happen during requests.
+If your app uses [Restify](http://mcavage.me/node-restify/), Bugsnag can automatically capture errors that happen during requests.
 
 To get notified of the errors in your app, just add the Bugsnag restify handler to your code.
 
