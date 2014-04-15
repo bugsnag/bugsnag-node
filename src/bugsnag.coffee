@@ -67,7 +67,7 @@ module.exports = class Bugsnag
   # tracks the request for manual notifies.
   @requestHandler: (req, res, next) ->
     dom = domain.create()
-    dom._bugsnagOptions = 
+    dom._bugsnagOptions =
       req: req
     dom.on 'error', next
     dom.run next
@@ -75,7 +75,7 @@ module.exports = class Bugsnag
   @restifyHandler: (req, res, route, err) => @notify(err, {req: req})
 
   # Intercepts the first argument from a callback and interprets it at as error.
-  # if the error is not null it notifies bugsnag and doesn't call the callback 
+  # if the error is not null it notifies bugsnag and doesn't call the callback
   @intercept: (cb) =>
     cb = (->) unless cb
     if process.domain
@@ -98,10 +98,10 @@ module.exports = class Bugsnag
     dom._bugsnagOptions = options
     dom.on 'error', (err) =>
       @notify err, options, autoNotifyCallback(err)
-    
+
     process.nextTick ->
       dom.run cb
-    
+
     return dom
 
   shouldNotify = ->

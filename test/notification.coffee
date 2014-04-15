@@ -48,7 +48,7 @@ describe "Notification", ->
     Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.events.length.should.equal 1
-    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device")
+    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device", "payloadVersion")
 
   describe "userId", ->
     it "should send a userId when passed as option to notify", ->
@@ -128,7 +128,7 @@ describe "Notification", ->
     it "should allow configured metadata on Bugsnag object", ->
       Bugsnag.metaData =
         key: "value"
-      
+
       Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key")

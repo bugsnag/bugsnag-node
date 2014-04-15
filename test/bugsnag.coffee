@@ -29,7 +29,7 @@ describe "Bugsnag", ->
     eventEmitter = new (require('events').EventEmitter)()
     eventEmitter.on "error", Bugsnag.notify
     eventEmitter.emit "error", "Something went wrong"
-    
+
     deliverStub.calledOnce.should.equal true
 
   it "should call deliver when notifying with a domain, using event emitter", ->
