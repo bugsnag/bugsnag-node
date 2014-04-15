@@ -69,6 +69,7 @@ module.exports = class Bugsnag
     dom = domain.create()
     dom._bugsnagOptions =
       req: req
+      options["severity"] = "error";
     dom.on 'error', next
     dom.run next
 
