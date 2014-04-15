@@ -10,6 +10,8 @@ module.exports = class Notification
   NOTIFIER_VERSION = Utils.getPackageVersion(path.join(__dirname, '..', 'package.json'))
   NOTIFIER_URL = "https://github.com/bugsnag/bugsnag-node"
 
+  SUPPORTED_SEVERITIES = ["error", "warning", "info"]
+
   constructor: (bugsnagError, options = {}) ->
     event =
       exceptions: [bugsnagError]
@@ -22,6 +24,11 @@ module.exports = class Notification
     event.releaseStage = Configuration.releaseStage if Configuration.releaseStage
 
     event.payloadVersion = Configuration.payloadVersion if Configuration.payloadVersion
+
+    if options.severity? and SUPPORTED_SEVERITIES.include?(options.severity)
+      event.severity = options.severity
+    else
+      event.severity = "warning"
 
     delete options.userId
     delete options.context

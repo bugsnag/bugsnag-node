@@ -48,7 +48,7 @@ describe "Notification", ->
     Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.events.length.should.equal 1
-    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device", "payloadVersion")
+    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device", "payloadVersion", "severity")
 
   describe "userId", ->
     it "should send a userId when passed as option to notify", ->

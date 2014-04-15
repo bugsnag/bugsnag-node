@@ -96,6 +96,8 @@ module.exports = class Bugsnag
 
     dom = domain.create()
     dom._bugsnagOptions = options
+    options["severity"] = "error"
+
     dom.on 'error', (err) =>
       @notify err, options, autoNotifyCallback(err)
 
