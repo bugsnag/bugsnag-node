@@ -25,7 +25,7 @@ module.exports = class Notification
 
     event.payloadVersion = Configuration.payloadVersion if Configuration.payloadVersion
 
-    if options.severity? and SUPPORTED_SEVERITIES.include?(options.severity)
+    if options.severity? and options.severity in SUPPORTED_SEVERITIES
       event.severity = options.severity
     else
       event.severity = "warning"
