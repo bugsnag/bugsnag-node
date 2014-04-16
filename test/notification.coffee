@@ -56,6 +56,17 @@ describe "Notification", ->
 
       deliverStub.firstCall.thisValue.events[0].payloadVersion.should.equal "2"
 
+  describe "severity", ->
+    it "should have a default severity", ->
+      Bugsnag.notify("This is the message")
+
+      deliverStub.firstCall.thisValue.events[0].severity.should.equal "warning"
+
+    it "should send a severity when passed as option to notify", ->
+      Bugsnag.notify("This is the message", severity: "info")
+
+      deliverStub.firstCall.thisValue.events[0].severity.should.equal "info"
+
   describe "userId", ->
     it "should send a userId when passed as option to notify", ->
       Bugsnag.notify("This is the message", userId: "TempId")
