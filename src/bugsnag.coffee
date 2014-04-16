@@ -72,7 +72,8 @@ module.exports = class Bugsnag
     dom.on 'error', next
     dom.run next
 
-  @restifyHandler: (req, res, route, err) => @notify(err, {req: req})
+  @restifyHandler: (req, res, route, err) =>
+    @notify err, {req: req, severity: "error"}, autoNotifyCallback(err)
 
   # Intercepts the first argument from a callback and interprets it at as error.
   # if the error is not null it notifies bugsnag and doesn't call the callback
@@ -83,7 +84,7 @@ module.exports = class Bugsnag
     else
       return (err, args...) =>
         if err && (err instanceof Error)
-          return @notify err, autoNotifyCallback(err)
+          return @notify err, {severity: "error"}, autoNotifyCallback(err)
         cb(args...) if cb
 
   # Automatically notifies of uncaught exceptions in the callback and error
