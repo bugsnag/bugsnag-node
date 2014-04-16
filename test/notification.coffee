@@ -99,6 +99,7 @@ describe "Notification", ->
 
   describe "releaseStage", ->
     it "shouldnt send a notification when releaseStage isnt configured in notifyReleaseStages", ->
+      Bugsnag.configure releaseStage: "test"
       Bugsnag.configure notifyReleaseStages: ["production"]
       Bugsnag.notify("This is the message")
 
@@ -181,3 +182,15 @@ describe "Notification", ->
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value1")
 
       Bugsnag.metaData = null
+
+  describe "autoNotify", ->
+    it "should autoNotify with a default severity", (done) ->
+      Bugsnag.autoNotify {}, ->
+        process.nextTick ->
+          try
+            deliverStub.calledOnce.should.equal true
+            deliverStub.firstCall.thisValue.events[0].severity.should.equal "error"
+            done()
+          catch e
+            done(e)
+        throw new Error()

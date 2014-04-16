@@ -99,6 +99,7 @@ module.exports = class Bugsnag
     options["severity"] = "error"
 
     dom.on 'error', (err) =>
+      # console.dir options
       @notify err, options, autoNotifyCallback(err)
 
     process.nextTick ->
