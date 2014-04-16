@@ -10,8 +10,10 @@ module.exports = class Notification
   NOTIFIER_VERSION = Utils.getPackageVersion(path.join(__dirname, '..', 'package.json'))
   NOTIFIER_URL = "https://github.com/bugsnag/bugsnag-node"
 
+  SUPPORTED_SEVERITIES = ["error", "warning", "info"]
+
   constructor: (bugsnagError, options = {}) ->
-    event = 
+    event =
       exceptions: [bugsnagError]
 
     event.userId = options.userId || process?.domain?._bugsnagOptions?.userId if options.userId || process?.domain?._bugsnagOptions?.userId
@@ -20,6 +22,13 @@ module.exports = class Notification
 
     event.appVersion = Configuration.appVersion if Configuration.appVersion
     event.releaseStage = Configuration.releaseStage if Configuration.releaseStage
+
+    event.payloadVersion = Configuration.payloadVersion if Configuration.payloadVersion
+
+    if options.severity? and options.severity in SUPPORTED_SEVERITIES
+      event.severity = options.severity
+    else
+      event.severity = "warning"
 
     delete options.userId
     delete options.context
@@ -37,11 +46,11 @@ module.exports = class Notification
     if process?.domain?._bugsnagOptions
       domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, except: ["req", "context", "userId", "groupingHash"])
       Utils.mergeObjects event.metaData ||= {}, domainOptions if Object.keys(domainOptions).length > 0
-    
+
     Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0
 
     @apiKey = Configuration.apiKey
-    @notifier = 
+    @notifier =
       name: NOTIFIER_NAME
       version: NOTIFIER_VERSION
       url: NOTIFIER_URL
@@ -50,7 +59,7 @@ module.exports = class Notification
 
   deliver: (cb) ->
     cb = null unless Utils.typeOf(cb) == "function"
-    
+
     # Filter before sending
     Utils.filterObject(@events[0].metaData, Configuration.filters)
 

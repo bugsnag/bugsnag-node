@@ -35,7 +35,7 @@ module.exports = class Bugsnag
       unCaughtErrorHandlerAdded = true
       Configuration.logger.info "Configuring uncaughtExceptionHandler"
       process.on "uncaughtException", (err) =>
-        @notify err, autoNotifyCallback(err, true)
+        @notify err, {severity: "error"}, autoNotifyCallback(err, true)
 
   # Only error is required, and that can be a string or error object
   @notify: (error, options, cb) ->
@@ -60,22 +60,23 @@ module.exports = class Bugsnag
   # The error handler express/connect middleware. Performs a notify
   @errorHandler: (err, req, res, next) =>
     Configuration.logger.info "Handling express error: #{err.stack || err}"
-    @notify err, {req: req}, autoNotifyCallback(err)
+    @notify err, {req: req, severity: "error"}, autoNotifyCallback(err)
     next err
 
   # The request middleware for express/connect. Ensures next(err) is called when there is an error, and
   # tracks the request for manual notifies.
   @requestHandler: (req, res, next) ->
     dom = domain.create()
-    dom._bugsnagOptions = 
+    dom._bugsnagOptions =
       req: req
     dom.on 'error', next
     dom.run next
 
-  @restifyHandler: (req, res, route, err) => @notify(err, {req: req})
+  @restifyHandler: (req, res, route, err) =>
+    @notify err, {req: req, severity: "error"}, autoNotifyCallback(err)
 
   # Intercepts the first argument from a callback and interprets it at as error.
-  # if the error is not null it notifies bugsnag and doesn't call the callback 
+  # if the error is not null it notifies bugsnag and doesn't call the callback
   @intercept: (cb) =>
     cb = (->) unless cb
     if process.domain
@@ -83,7 +84,7 @@ module.exports = class Bugsnag
     else
       return (err, args...) =>
         if err && (err instanceof Error)
-          return @notify err, autoNotifyCallback(err)
+          return @notify err, {severity: "error"}, autoNotifyCallback(err)
         cb(args...) if cb
 
   # Automatically notifies of uncaught exceptions in the callback and error
@@ -96,12 +97,15 @@ module.exports = class Bugsnag
 
     dom = domain.create()
     dom._bugsnagOptions = options
+    options["severity"] = "error"
+
     dom.on 'error', (err) =>
+      # console.dir options
       @notify err, options, autoNotifyCallback(err)
-    
+
     process.nextTick ->
       dom.run cb
-    
+
     return dom
 
   shouldNotify = ->

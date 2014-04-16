@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.3.0
+-----
+-   Send 'severity' of error to Bugsnag
+-   Add 'payloadVersion'
+
 1.2.0
 -----
 -   Add restify support
