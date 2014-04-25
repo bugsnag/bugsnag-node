@@ -97,6 +97,23 @@ bugsnag.notify(new Error("Non-fatal"), {
 });
 ```
 
+### Severity
+
+You can set the severity of an error in Bugsnag by including the severity option when
+notifying bugsnag of the error,
+
+```javascript
+bugsnag.notify(new Error("Non-fatal"), {
+  severity: "error"
+})
+```
+
+Valid severities are `error`, `warning` and `info`.
+
+Severity is displayed in the dashboard and can be used to filter the error list.
+By default all crashes (or unhandled exceptions) are set to `error` and all
+`bugsnag.notify` calls default to `warning`.
+
 See the full documentation for the [notify](#notify) function for more details.
 
 
@@ -212,7 +229,7 @@ This function is called for all errors that aren't manually sent to bugsnag.noti
 ### metaData
 
 It is often very useful to send some extra application or user specific data along with every exception. To do this, you can set the `metaData`:
-    
+
 ```javascript
 bugsnag.register("your-api-key-here", { metaData: {
   user: {
@@ -275,6 +292,23 @@ bugsnag.notify(new Error("Something went badly wrong"), {
   }
 });
 ```
+
+### severity
+
+You can set the severity of an error in Bugsnag by including the severity option when
+notifying bugsnag of the error,
+
+```ruby
+bugsnag.notify(new Error("Non-fatal"), {
+  severity: "error"
+})
+```
+
+Valid severities are `error`, `warning` and `info`.
+
+Severity is displayed in the dashboard and can be used to filter the error list.
+By default all crashes (or unhandled exceptions) are set to `error` and all
+`Bugsnag.notify` calls default to `warning`.
 
 ### callback
 
