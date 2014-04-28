@@ -17,12 +17,12 @@ module.exports = class Notification
     event =
       exceptions: [bugsnagError]
 
-    ns = continuationLocalStorage.getNamespace("bugsnag")
-    domainOptions = ns.get("options") if ns
+    nsOptions = continuationLocalStorage?.getNamespace("bugsnag")?.get("options")
+    options = Utils.mergeObjects(Utils.cloneObject(nsOptions), options) if nsOptions
 
-    event.userId = options.userId || domainOptions?.userId if options.userId || domainOptions?.userId
-    event.context = options.context || domainOptions?.context if options.context || domainOptions?.context
-    event.groupingHash = options.groupingHash || domainOptions?.groupingHash if options.groupingHash || domainOptions?.groupingHash
+    event.userId = options.userId if options.userId
+    event.context = options.context if options.context
+    event.groupingHash = options.groupingHash if options.groupingHash
 
     event.appVersion = Configuration.appVersion if Configuration.appVersion
     event.releaseStage = Configuration.releaseStage if Configuration.releaseStage
@@ -31,26 +31,16 @@ module.exports = class Notification
 
     if options.severity? and options.severity in SUPPORTED_SEVERITIES
       event.severity = options.severity
-    else if domainOptions?.severity? and domainOptions.severity in SUPPORTED_SEVERITIES
-      event.severity = domainOptions.severity
     else
       event.severity = "warning"
 
-    delete options.userId
-    delete options.context
-    delete options.groupingHash
     event.metaData = Utils.cloneObject Configuration.metaData if Configuration.metaData && Object.keys(Configuration.metaData).length > 0
     event.device = {hostname: Configuration.hostname} if Configuration.hostname
 
-    if options.req
-      @processRequest event, requestInfo(options.req)
-      delete options.req
+    @processRequest event, requestInfo(options.req) if options.req
 
-    if domainOptions
-      domainOptions = Utils.cloneObject(domainOptions, except: ["req", "context", "userId", "groupingHash"])
-      Utils.mergeObjects event.metaData ||= {}, domainOptions if Object.keys(domainOptions).length > 0
-
-    Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0
+    metaData = Utils.cloneObject(options, except: ["req", "context", "userId", "groupingHash"])
+    Utils.mergeObjects event.metaData ||= {}, metaData if Object.keys(metaData).length > 0
 
     @apiKey = Configuration.apiKey
     @notifier =

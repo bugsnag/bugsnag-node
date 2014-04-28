@@ -184,67 +184,77 @@ describe "Notification", ->
       Bugsnag.metaData = null
 
   describe "autoNotify", ->
-    it "should autoNotify with a default severity", (done) ->
-      Bugsnag.autoNotify ->
-        Bugsnag.notify new Error()
+    describe "notify", ->
+      it "with a default severity", (done) ->
+        Bugsnag.autoNotify ->
+          Bugsnag.notify new Error()
 
-        deliverStub.calledOnce.should.equal true
-        deliverStub.firstCall.thisValue.events[0].severity.should.equal "warning"
-        done()
+          deliverStub.calledOnce.should.equal true
+          deliverStub.firstCall.thisValue.events[0].severity.should.equal "warning"
+          done()
 
-    it "should autoNotify with an error severity", (done) ->
-      Bugsnag.autoNotify {severity: "error"}, ->
-        Bugsnag.notify new Error()
+      it "with an error severity", (done) ->
+        Bugsnag.autoNotify {severity: "error"}, ->
+          Bugsnag.notify new Error()
 
-        deliverStub.calledOnce.should.equal true
-        deliverStub.firstCall.thisValue.events[0].severity.should.equal "error"
-        done()
-
-    it "should autoNotify with an info severity", (done) ->
-      Bugsnag.autoNotify {severity: "info"}, ->
-        Bugsnag.notify new Error()
-
-        deliverStub.calledOnce.should.equal true
-        deliverStub.firstCall.thisValue.events[0].severity.should.equal "info"
-        done()
-
-    it "should autoNotify uncaught with a default severity", (done) ->
-      dom = Bugsnag.autoNotify ->
-        process.nextTick ->
           deliverStub.calledOnce.should.equal true
           deliverStub.firstCall.thisValue.events[0].severity.should.equal "error"
           done()
 
-      dom.emit "error", new Error()
+      it "with an info severity", (done) ->
+        Bugsnag.autoNotify {severity: "info"}, ->
+          Bugsnag.notify new Error()
 
-  it "should autoNotify uncaught with the set context", (done) ->
-    dom = Bugsnag.autoNotify {context: "testContext"}, ->
-      process.nextTick ->
-        deliverStub.calledOnce.should.equal true
-        deliverStub.firstCall.thisValue.events[0].context.should.equal "testContext"
-        done()
-
-    dom.emit "error", new Error()
-
-
-  it "should autoNotify multiple concurrent tasks", (done) ->
-    firstDom = Bugsnag.autoNotify {context: "testContext1"}, ->
-      setTimeout( ->
-        try
-          firstDom.emit "error", new Error()
-          deliverStub.calledTwice.should.equal true
-          deliverStub.secondCall.thisValue.events[0].context.should.equal "testContext1"
-          done()
-        catch err
-          done err
-      , 1000)
-
-    secondDom = Bugsnag.autoNotify {context: "testContext2"}, ->
-      setTimeout( ->
-        try
-          secondDom.emit "error", new Error()
           deliverStub.calledOnce.should.equal true
-          deliverStub.firstCall.thisValue.events[0].context.should.equal "testContext2"
-        catch err
-          done err
-      , 100)
+          deliverStub.firstCall.thisValue.events[0].severity.should.equal "info"
+          done()
+
+      it "with set context", (done) ->
+        Bugsnag.autoNotify {context: "testContextNotify"}, ->
+          Bugsnag.notify new Error()
+
+          deliverStub.calledOnce.should.equal true
+          deliverStub.firstCall.thisValue.events[0].context.should.equal "testContextNotify"
+          done()
+
+    describe "uncaught", ->
+      it "with a default severity", (done) ->
+        dom = Bugsnag.autoNotify ->
+          process.nextTick ->
+            deliverStub.calledOnce.should.equal true
+            deliverStub.firstCall.thisValue.events[0].severity.should.equal "error"
+            done()
+
+        dom.emit "error", new Error()
+
+      it "with the set context", (done) ->
+        dom = Bugsnag.autoNotify {context: "testContext"}, ->
+          process.nextTick ->
+            deliverStub.calledOnce.should.equal true
+            deliverStub.firstCall.thisValue.events[0].context.should.equal "testContext"
+            done()
+
+        dom.emit "error", new Error()
+
+
+      it "multiple concurrent tasks", (done) ->
+        firstDom = Bugsnag.autoNotify {context: "testContext1"}, ->
+          setTimeout( ->
+            try
+              firstDom.emit "error", new Error()
+              deliverStub.calledTwice.should.equal true
+              deliverStub.secondCall.thisValue.events[0].context.should.equal "testContext1"
+              done()
+            catch err
+              done err
+          , 1000)
+
+        secondDom = Bugsnag.autoNotify {context: "testContext2"}, ->
+          setTimeout( ->
+            try
+              secondDom.emit "error", new Error()
+              deliverStub.calledOnce.should.equal true
+              deliverStub.firstCall.thisValue.events[0].context.should.equal "testContext2"
+            catch err
+              done err
+          , 100)
