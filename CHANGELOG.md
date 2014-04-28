@@ -1,6 +1,10 @@
 Changelog
 =========
 
+next
+-----
+-   Allow the filters to be configured
+
 1.3.0
 -----
 -   Send 'severity' of error to Bugsnag
