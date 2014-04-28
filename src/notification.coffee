@@ -3,6 +3,7 @@ Logger = require "./logger"
 Configuration = require "./configuration"
 requestInfo = require "./request_info"
 path = require "path"
+continuationLocalStorage = require "continuation-local-storage"
 
 module.exports = class Notification
   # Notifier Constants
@@ -16,9 +17,12 @@ module.exports = class Notification
     event =
       exceptions: [bugsnagError]
 
-    event.userId = options.userId || process?.domain?._bugsnagOptions?.userId if options.userId || process?.domain?._bugsnagOptions?.userId
-    event.context = options.context || process?.domain?._bugsnagOptions?.context if options.context || process?.domain?._bugsnagOptions?.context
-    event.groupingHash = options.groupingHash || process?.domain?._bugsnagOptions?.groupingHash if options.groupingHash || process?.domain?._bugsnagOptions?.groupingHash
+    ns = continuationLocalStorage.getNamespace("bugsnag")
+    domainOptions = ns.get("options") if ns
+
+    event.userId = options.userId || domainOptions?.userId if options.userId || domainOptions?.userId
+    event.context = options.context || domainOptions?.context if options.context || domainOptions?.context
+    event.groupingHash = options.groupingHash || domainOptions?.groupingHash if options.groupingHash || domainOptions?.groupingHash
 
     event.appVersion = Configuration.appVersion if Configuration.appVersion
     event.releaseStage = Configuration.releaseStage if Configuration.releaseStage
@@ -27,6 +31,8 @@ module.exports = class Notification
 
     if options.severity? and options.severity in SUPPORTED_SEVERITIES
       event.severity = options.severity
+    else if domainOptions?.severity? and domainOptions.severity in SUPPORTED_SEVERITIES
+      event.severity = domainOptions.severity
     else
       event.severity = "warning"
 
@@ -39,12 +45,9 @@ module.exports = class Notification
     if options.req
       @processRequest event, requestInfo(options.req)
       delete options.req
-    else if process?.domain?._bugsnagOptions?.cleanedRequest
-      @processRequest event, process.domain._bugsnagOptions.cleanedRequest
 
-
-    if process?.domain?._bugsnagOptions
-      domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, except: ["req", "context", "userId", "groupingHash"])
+    if domainOptions
+      domainOptions = Utils.cloneObject(domainOptions, except: ["req", "context", "userId", "groupingHash"])
       Utils.mergeObjects event.metaData ||= {}, domainOptions if Object.keys(domainOptions).length > 0
 
     Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0
