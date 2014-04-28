@@ -46,6 +46,7 @@ module.exports = class Configuration
     @appVersion = options.appVersion || @appVersion
     @autoNotifyUncaught = if options.autoNotify? then options.autoNotify else @autoNotifyUncaught
     @useSSL = if options.useSSL? then options.useSSL else @useSSL
+    @filters = options.filters || @filters
     @notifyReleaseStages = options.notifyReleaseStages || @notifyReleaseStages
     @notifyHost = options.notifyHost || @notifyHost
     @notifyPort = options.notifyPort || @notifyPort
