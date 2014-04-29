@@ -1,5 +1,6 @@
 domain = require "domain"
 path = require "path"
+continuationLocalStorage = require "continuation-local-storage"
 
 Utils = require "./utils"
 Logger = require "./logger"
@@ -66,11 +67,13 @@ module.exports = class Bugsnag
   # The request middleware for express/connect. Ensures next(err) is called when there is an error, and
   # tracks the request for manual notifies.
   @requestHandler: (req, res, next) ->
-    dom = domain.create()
-    dom._bugsnagOptions =
-      req: req
-    dom.on 'error', next
-    dom.run next
+    ns = continuationLocalStorage.createNamespace("bugsnag")
+    ns.run ->
+      ns.set("options", {req: req})
+
+      dom = domain.create()
+      dom.on 'error', next
+      dom.run next
 
   @restifyHandler: (req, res, route, err) =>
     @notify err, {req: req, severity: "error"}, autoNotifyCallback(err)
@@ -96,14 +99,13 @@ module.exports = class Bugsnag
       options = {}
 
     dom = domain.create()
-    dom._bugsnagOptions = options
-    options["severity"] = "error"
-
     dom.on 'error', (err) =>
-      # console.dir options
-      @notify err, options, autoNotifyCallback(err)
+      @notify err, Utils.mergeObjects({severity: "error"}, options), autoNotifyCallback(err)
 
-    process.nextTick ->
+    ns = continuationLocalStorage.createNamespace("bugsnag")
+    ns.run ->
+      ns.set("options", options)
+
       dom.run cb
 
     return dom

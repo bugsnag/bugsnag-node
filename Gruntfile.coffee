@@ -22,9 +22,9 @@ module.exports = (grunt) ->
 
     mochaTest:
       files: ["test/*.coffee"]
-    mochaTestConfig:
       options:
         reporter: "spec"
+        #grep: "should autoNotify multiple concurrent tasks"
 
   # Load tasks from plugins
   grunt.loadNpmTasks "grunt-contrib-coffee"
