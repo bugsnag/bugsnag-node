@@ -3,7 +3,6 @@ Logger = require "./logger"
 Configuration = require "./configuration"
 requestInfo = require "./request_info"
 path = require "path"
-continuationLocalStorage = require "continuation-local-storage"
 
 module.exports = class Notification
   # Notifier Constants
@@ -17,12 +16,9 @@ module.exports = class Notification
     event =
       exceptions: [bugsnagError]
 
-    nsOptions = continuationLocalStorage?.getNamespace("bugsnag")?.get("options")
-    options = Utils.mergeObjects(Utils.cloneObject(nsOptions), options) if nsOptions
-
-    event.userId = options.userId if options.userId
-    event.context = options.context if options.context
-    event.groupingHash = options.groupingHash if options.groupingHash
+    event.userId = options.userId || process?.domain?._bugsnagOptions?.userId if options.userId || process?.domain?._bugsnagOptions?.userId
+    event.context = options.context || process?.domain?._bugsnagOptions?.context if options.context || process?.domain?._bugsnagOptions?.context
+    event.groupingHash = options.groupingHash || process?.domain?._bugsnagOptions?.groupingHash if options.groupingHash || process?.domain?._bugsnagOptions?.groupingHash
 
     event.appVersion = Configuration.appVersion if Configuration.appVersion
     event.releaseStage = Configuration.releaseStage if Configuration.releaseStage
@@ -34,13 +30,24 @@ module.exports = class Notification
     else
       event.severity = "warning"
 
+    delete options.userId
+    delete options.context
+    delete options.groupingHash
     event.metaData = Utils.cloneObject Configuration.metaData if Configuration.metaData && Object.keys(Configuration.metaData).length > 0
     event.device = {hostname: Configuration.hostname} if Configuration.hostname
 
-    @processRequest event, requestInfo(options.req) if options.req
+    if options.req
+      @processRequest event, requestInfo(options.req)
+      delete options.req
+    else if process?.domain?._bugsnagOptions?.cleanedRequest
+      @processRequest event, process.domain._bugsnagOptions.cleanedRequest
 
-    metaData = Utils.cloneObject(options, except: ["req", "context", "userId", "groupingHash"])
-    Utils.mergeObjects event.metaData ||= {}, metaData if Object.keys(metaData).length > 0
+
+    if process?.domain?._bugsnagOptions
+      domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, except: ["req", "context", "userId", "groupingHash"])
+      Utils.mergeObjects event.metaData ||= {}, domainOptions if Object.keys(domainOptions).length > 0
+
+    Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0
 
     @apiKey = Configuration.apiKey
     @notifier =

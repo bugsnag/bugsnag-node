@@ -44,7 +44,6 @@ describe "Bugsnag", ->
 describe "Bugsnag", ->
   describe "Notification.deliver", ->
     it "should call the callback after notifying bugsnag", (done) ->
-      @timeout 5000
       Bugsnag.notify("error message", done)
 
     it "should call callback when releaseStage isnt configured in notifyReleaseStages", (done) ->
