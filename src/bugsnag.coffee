@@ -45,6 +45,8 @@ module.exports = class Bugsnag
 
     options ||= {}
 
+    options.error = error
+
     unless shouldNotify()
       cb() if cb
       return
