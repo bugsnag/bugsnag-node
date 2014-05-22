@@ -22,7 +22,6 @@ module.exports = (grunt) ->
 
     mochaTest:
       files: ["test/*.coffee"]
-    mochaTestConfig:
       options:
         reporter: "spec"
 
