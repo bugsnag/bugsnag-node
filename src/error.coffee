@@ -7,9 +7,13 @@ module.exports = class Error
     if Utils.typeOf(error) == "string"
       @message = error
       @errorClass = errorClass || "Error"
-    else
+    else if error
       @message = error.message
       @errorClass = errorClass || error.constructor.name || error.name || "Error"
+    else
+      @message = "[unknown]"
+      @errorClass = errorClass || "Error"
+
 
     callSites = stacktrace.parse error
     callSites = stacktrace.get() if callSites.length == 0
