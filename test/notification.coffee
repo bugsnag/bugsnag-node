@@ -1,3 +1,4 @@
+path = require("path")
 should = require("chai").should()
 sinon = require("sinon")
 
@@ -130,7 +131,7 @@ describe "Notification", ->
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace.should.be.an("array")
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace.should.have.length.of.at.least 2
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].should.have.keys("file", "lineNumber", "columnNumber", "method")
-      deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].file.should.contain "/error.js"
+      deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].file.should.contain path.sep + "error.js"
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].lineNumber.should.be.an "number"
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].columnNumber.should.be.an "number"
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].method.should.equal "Error"
