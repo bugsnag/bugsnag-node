@@ -29,7 +29,7 @@
     ],
     "license": "MIT",
     "scripts": {
-        "test": "mocha"
+        "test": "mocha --compilers coffee:coffee-script/register"
     },
     "engine": {
         "node": ">=0.8"
