@@ -141,7 +141,7 @@ describe "Notification", ->
       Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].should.not.have.property("inProject")
-      deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[2].should.have.property("inProject", true)
+      deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[3].should.have.property("inProject", true)
 
   describe "metaData", ->
     it "should allow configured metadata on Bugsnag object", ->
