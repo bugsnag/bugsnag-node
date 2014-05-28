@@ -50,11 +50,11 @@ module.exports = class Bugsnag
       return
 
     Configuration.logger.info "Notifying Bugsnag of exception...\n#{error?.stack || error}"
-    bugsnagError = new BugsnagError(error, options.errorName)
+    bugsnagErrors = BugsnagError.buildErrors(error, options.errorName)
 
     delete options.errorName
 
-    notification = new Notification(bugsnagError, options)
+    notification = new Notification(bugsnagErrors, options)
     notification.deliver cb
 
   # The error handler express/connect middleware. Performs a notify

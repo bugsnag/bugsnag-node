@@ -12,9 +12,9 @@ module.exports = class Notification
 
   SUPPORTED_SEVERITIES = ["error", "warning", "info"]
 
-  constructor: (bugsnagError, options = {}) ->
+  constructor: (bugsnagErrors, options = {}) ->
     event =
-      exceptions: [bugsnagError]
+      exceptions: bugsnagErrors
 
     event.userId = options.userId || process?.domain?._bugsnagOptions?.userId if options.userId || process?.domain?._bugsnagOptions?.userId
     event.context = options.context || process?.domain?._bugsnagOptions?.context if options.context || process?.domain?._bugsnagOptions?.context
