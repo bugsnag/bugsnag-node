@@ -1,9 +1,12 @@
 Changelog
 =========
 
-next
+1.3.1
 -----
 -   Allow the filters to be configured
+-   Fix bug where null errors could cause bugsnag not to notify
+-   Fix iis issues on windows
+-   Detect oauth caused by errors
 
 1.3.0
 -----
