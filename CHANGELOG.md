@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.3.2
+-----
+-   Push yanked version
+
 1.3.1
 -----
 -   Allow the filters to be configured
