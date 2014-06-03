@@ -191,7 +191,8 @@ bugsnag.register("your-api-key-here", { autoNotifyUncaught: false });
 ```
 
 <!-- Custom anchor for linking from alerts -->
-### projectRoot <a name="set-project-root"></a>
+<div id="set-project-root"></div>
+### projectRoot
 
 Bugsnag can highlight stacktrace lines that are in your project, and automatically hides stacktrace lines from external libraries. If Bugsnag is not hiding external stacktrace lines, it is likely that the `projectRoot` is being incorrectly calculated. You can set `projectRoot` as part of the register call:
 
