@@ -2,7 +2,7 @@ express = require 'express'
 sinon = require 'sinon'
 assert = require 'assert'
 bugsnag = require "../"
-http = require 'http'
+request = require 'request'
 Notification = require "../lib/notification"
 
 bugsnag.register '00112233445566778899aabbccddeeff'
@@ -28,28 +28,17 @@ describe "express middleware", ->
     port = app.listen().address().port
 
 
-    http.request({
-      host: 'localhost',
-      port: port,
-      path: '/ping',
-      method: 'GET',
-    }, (res) ->
-      res.on 'data', ->
+    request.get "http://localhost:#{port}/ping", (err, res, body) ->
+      assert deliverStub.calledOnce
 
-      res.on 'end', ->
-        console.log 'end'
-        assert deliverStub.calledOnce
+      req = deliverStub.firstCall.thisValue.events[0].metaData.request
 
-        request = deliverStub.firstCall.thisValue.events[0].metaData.request
-
-        assert.equal request.url, "http://localhost:#{port}/ping"
-        assert.equal request.path, "/ping"
-        assert.equal request.method, "GET"
-        assert.equal request.headers.host, "localhost:#{port}"
-        assert.equal request.httpVersion, "1.1"
-        assert.equal request.connection.remoteAddress, "127.0.0.1"
-        assert.equal request.connection.localPort, port
-        assert.equal request.connection.IPVersion, "IPv4"
-        next()
-    ).end()
-
+      assert.equal req.url, "http://localhost:#{port}/ping"
+      assert.equal req.path, "/ping"
+      assert.equal req.method, "GET"
+      assert.equal req.headers.host, "localhost:#{port}"
+      assert.equal req.httpVersion, "1.1"
+      assert.equal req.connection.remoteAddress, "127.0.0.1"
+      assert.equal req.connection.localPort, port
+      assert.equal req.connection.IPVersion, "IPv4"
+      next()

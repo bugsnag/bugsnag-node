@@ -12,6 +12,7 @@ module.exports = class Configuration
   @projectRoot: path.dirname require?.main?.filename
   @autoNotifyUncaught: true
   @useSSL: true
+  @proxy: null
   @notifyHost = "notify.bugsnag.com"
   @notifyPath = "/"
   @notifyPort = undefined
