@@ -190,8 +190,8 @@ Bugsnag will automatically register for the `uncaughtexception` event. If you do
 bugsnag.register("your-api-key-here", { autoNotifyUncaught: false });
 ```
 
-<!-- Custom ID for linking from alerts -->
-<h3 id=set-project-root>projectRoot</h3>
+<!-- Custom anchor for linking from alerts -->
+### projectRoot <a name="set-project-root"></a>
 
 Bugsnag can highlight stacktrace lines that are in your project, and automatically hides stacktrace lines from external libraries. If Bugsnag is not hiding external stacktrace lines, it is likely that the `projectRoot` is being incorrectly calculated. You can set `projectRoot` as part of the register call:
 
