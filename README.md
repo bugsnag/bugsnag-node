@@ -182,12 +182,12 @@ The Bugsnag notifier will automatically use the version from your `package.json`
 bugsnag.register("your-api-key-here", { appVersion: "1.0.0" });
 ```
 
-### autoNotifyUncaught
+### autoNotify
 
 Bugsnag will automatically register for the `uncaughtexception` event. If you do not wish for this to happen, you can disable the functionality as part of the register call:
 
 ```javascript
-bugsnag.register("your-api-key-here", { autoNotifyUncaught: false });
+bugsnag.register("your-api-key-here", { autoNotify: false });
 ```
 
 <!-- Custom anchor for linking from alerts -->
