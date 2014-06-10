@@ -60,7 +60,3 @@ module.exports = class Configuration
 
     if options.packageJSON? && !@appVersion
       @appVersion = Utils.getPackageVersion(Utils.fullPath(options.packageJSON))
-
-    unless @appVersion
-      @appVersion = Utils.getPackageVersion(path.join(path.dirname(require.main.filename),'package.json')) if require?.main?.filename
-      @appVersion ||= Utils.getPackageVersion(path.join(@projectRoot, 'package.json'))
