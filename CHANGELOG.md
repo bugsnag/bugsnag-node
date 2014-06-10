@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.4.0
+-----
+-   Don't send appVersion automatically
+
 1.3.2
 -----
 -   Push yanked version

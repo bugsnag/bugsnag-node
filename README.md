@@ -176,7 +176,7 @@ bugsnag.register("your-api-key-here", { notifyReleaseStages: ["production"] });
 
 ### appVersion
 
-The Bugsnag notifier will automatically use the version from your `package.json` file. If you want to override this behavior, you can set the `appVersion` option:
+If you use an appVersion to identify releases of your app you can send it to Bugsnag. When set errors will only unresolve when they re-occur in a newer appVersion.
 
 ```javascript
 bugsnag.register("your-api-key-here", { appVersion: "1.0.0" });
