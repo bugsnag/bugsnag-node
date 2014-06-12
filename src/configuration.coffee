@@ -55,6 +55,7 @@ module.exports = class Configuration
     @metaData = options.metaData || @metaData
     @onUncaughtError = options.onUncaughtError || @onUncaughtError
     @hostname = options.hostname || @hostname
+    @proxy = options.proxy
 
     if options.projectRoot?
       @projectRoot = Utils.fullPath options.projectRoot

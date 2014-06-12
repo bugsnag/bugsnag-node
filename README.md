@@ -244,6 +244,14 @@ bugsnag.register("your-api-key-here", { metaData: {
 
 You can adjust this after calling register by using the `bugsnag.metaData` property.
 
+### proxy
+
+You can use a proxy server by configuring a proxy url when registering with bugsnag.
+
+```javascript
+bugsnag.register("your-api-key-here", { proxy: "http://localhost:8080" });
+```
+
 Notify
 ------
 
