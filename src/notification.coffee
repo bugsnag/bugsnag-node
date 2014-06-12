@@ -3,6 +3,7 @@ Logger = require "./logger"
 Configuration = require "./configuration"
 requestInfo = require "./request_info"
 path = require "path"
+request = require "request"
 
 module.exports = class Notification
   # Notifier Constants
@@ -74,38 +75,28 @@ module.exports = class Notification
         cache.push(value)
       return value
 
+    notifyUrl = "#{if Configuration.useSSL then "https" else "http"}://#{Configuration.notifyHost}:#{port}#{Configuration.notifyPath}"
     options =
-      host: Configuration.notifyHost
-      port: port
-      path: Configuration.notifyPath
-      method: 'POST'
+      proxy: Configuration.proxy
+      body: payload
       headers:
         "Content-Type": 'application/json'
         "Content-Length": payload.length
 
     Configuration.logger.info payload
 
-    lib = if Configuration.useSSL then require("https") else require("http")
-    req = lib.request options, (res) ->
-      if cb
-        bodyRes = ""
-
-        res.setEncoding 'utf8'
-        res
-        .on('data', (chunk) -> bodyRes += chunk if chunk)
-        .on 'end', () ->
-          if res.statusCode == 200
-            return cb null, bodyRes
-          else
-            return cb new Error(bodyRes)
-
-    req.on "error", (err) ->
-      if cb
-        cb err
+    request.post notifyUrl, options, (err, res, body) ->
+      if err
+        if cb
+          cb err
+        else
+          Configuration.logger.error err
       else
-        Configuration.logger.error err
-    req.write payload, "utf-8"
-    req.end()
+        if cb
+          if res.statusCode == 200
+            cb null, body
+          else
+            cb new Error(body)
 
   processRequest: (event, cleanRequest) ->
     event.metaData ||= {}

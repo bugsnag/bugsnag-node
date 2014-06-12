@@ -5,7 +5,8 @@
     "main": "./lib/bugsnag.js",
     "homepage": "http://bugsnag.com",
     "dependencies": {
-        "stack-trace": ">=0.0.6"
+        "stack-trace": ">=0.0.6",
+        "request": ">=2.36.0"
     },
     "devDependencies": {
         "mocha": "~1.8.0",
