@@ -221,7 +221,7 @@ bugsnag.register("your-api-key-here", { useSSL: false });
 By default, bugsnag will exit your application if there is an uncaught exception or an uncaught event emitter "error" event. This is in line with standard node.js behaviour. If you want to have different behaviour, then please set onUncaughtError as follows,
 
 ```javascript
-bugsnag.register("your-api-key-here", { onUncaughtError: function(error){
+bugsnag.register("your-api-key-here", { onUncaughtError: function(err){
   console.error(err.stack || err);
 }});
 ```
