@@ -1,6 +1,26 @@
 Changelog
 =========
 
+1.4.0
+-----
+-   Don't send appVersion automatically
+
+1.3.2
+-----
+-   Push yanked version
+
+1.3.1
+-----
+-   Allow the filters to be configured
+-   Fix bug where null errors could cause bugsnag not to notify
+-   Fix iis issues on windows
+-   Detect oauth caused by errors
+
+1.3.0
+-----
+-   Send 'severity' of error to Bugsnag
+-   Add 'payloadVersion'
+
 1.2.0
 -----
 -   Add restify support

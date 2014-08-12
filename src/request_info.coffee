@@ -21,13 +21,13 @@ module.exports = requestInfo = (req) ->
 
   if connection
     request.connection = {
-      remoteAddress: connection.remoteAddress
+      remoteAddress: connection.remoteAddress || req.ip
       remotePort: connection.remotePort
       bytesRead: connection.bytesRead
       bytesWritten: connection.bytesWritten
-      localPort: address.port
-      localAddress: address.address
-      IPVersion: address.family
+      localPort: portNumber
+      localAddress: address?.address
+      IPVersion: address?.family
     }
 
   request

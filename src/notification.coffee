@@ -3,6 +3,7 @@ Logger = require "./logger"
 Configuration = require "./configuration"
 requestInfo = require "./request_info"
 path = require "path"
+request = require "request"
 
 module.exports = class Notification
   # Notifier Constants
@@ -10,9 +11,11 @@ module.exports = class Notification
   NOTIFIER_VERSION = Utils.getPackageVersion(path.join(__dirname, '..', 'package.json'))
   NOTIFIER_URL = "https://github.com/bugsnag/bugsnag-node"
 
-  constructor: (bugsnagError, options = {}) ->
-    event = 
-      exceptions: [bugsnagError]
+  SUPPORTED_SEVERITIES = ["error", "warning", "info"]
+
+  constructor: (bugsnagErrors, options = {}) ->
+    event =
+      exceptions: bugsnagErrors
 
     event.userId = options.userId || process?.domain?._bugsnagOptions?.userId if options.userId || process?.domain?._bugsnagOptions?.userId
     event.context = options.context || process?.domain?._bugsnagOptions?.context if options.context || process?.domain?._bugsnagOptions?.context
@@ -20,6 +23,13 @@ module.exports = class Notification
 
     event.appVersion = Configuration.appVersion if Configuration.appVersion
     event.releaseStage = Configuration.releaseStage if Configuration.releaseStage
+
+    event.payloadVersion = Configuration.payloadVersion if Configuration.payloadVersion
+
+    if options.severity? and options.severity in SUPPORTED_SEVERITIES
+      event.severity = options.severity
+    else
+      event.severity = "warning"
 
     delete options.userId
     delete options.context
@@ -37,11 +47,11 @@ module.exports = class Notification
     if process?.domain?._bugsnagOptions
       domainOptions = Utils.cloneObject(process.domain._bugsnagOptions, except: ["req", "context", "userId", "groupingHash"])
       Utils.mergeObjects event.metaData ||= {}, domainOptions if Object.keys(domainOptions).length > 0
-    
+
     Utils.mergeObjects event.metaData ||= {}, options if Object.keys(options).length > 0
 
     @apiKey = Configuration.apiKey
-    @notifier = 
+    @notifier =
       name: NOTIFIER_NAME
       version: NOTIFIER_VERSION
       url: NOTIFIER_URL
@@ -50,7 +60,7 @@ module.exports = class Notification
 
   deliver: (cb) ->
     cb = null unless Utils.typeOf(cb) == "function"
-    
+
     # Filter before sending
     Utils.filterObject(@events[0].metaData, Configuration.filters)
 
@@ -65,38 +75,28 @@ module.exports = class Notification
         cache.push(value)
       return value
 
+    notifyUrl = "#{if Configuration.useSSL then "https" else "http"}://#{Configuration.notifyHost}:#{port}#{Configuration.notifyPath}"
     options =
-      host: Configuration.notifyHost
-      port: port
-      path: Configuration.notifyPath
-      method: 'POST'
+      proxy: Configuration.proxy
+      body: payload
       headers:
         "Content-Type": 'application/json'
         "Content-Length": payload.length
 
     Configuration.logger.info payload
 
-    lib = if Configuration.useSSL then require("https") else require("http")
-    req = lib.request options, (res) ->
-      if cb
-        bodyRes = ""
-
-        res.setEncoding 'utf8'
-        res
-        .on('data', (chunk) -> bodyRes += chunk if chunk)
-        .on 'end', () ->
-          if res.statusCode == 200
-            return cb null, bodyRes
-          else
-            return cb new Error(bodyRes)
-
-    req.on "error", (err) ->
-      if cb
-        cb err
+    request.post notifyUrl, options, (err, res, body) ->
+      if err
+        if cb
+          cb err
+        else
+          Configuration.logger.error err
       else
-        Configuration.logger.error err
-    req.write payload, "utf-8"
-    req.end()
+        if cb
+          if res.statusCode == 200
+            cb null, body
+          else
+            cb new Error(body)
 
   processRequest: (event, cleanRequest) ->
     event.metaData ||= {}

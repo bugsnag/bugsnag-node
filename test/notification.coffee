@@ -1,3 +1,4 @@
+path = require("path")
 should = require("chai").should()
 sinon = require("sinon")
 
@@ -48,7 +49,24 @@ describe "Notification", ->
     Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.events.length.should.equal 1
-    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device")
+    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device", "payloadVersion", "severity")
+
+  describe "payloadVersion", ->
+    it "should have a payloadVersion", ->
+      Bugsnag.notify("This is the message")
+
+      deliverStub.firstCall.thisValue.events[0].payloadVersion.should.equal "2"
+
+  describe "severity", ->
+    it "should have a default severity", ->
+      Bugsnag.notify("This is the message")
+
+      deliverStub.firstCall.thisValue.events[0].severity.should.equal "warning"
+
+    it "should send a severity when passed as option to notify", ->
+      Bugsnag.notify("This is the message", severity: "info")
+
+      deliverStub.firstCall.thisValue.events[0].severity.should.equal "info"
 
   describe "userId", ->
     it "should send a userId when passed as option to notify", ->
@@ -82,6 +100,7 @@ describe "Notification", ->
 
   describe "releaseStage", ->
     it "shouldnt send a notification when releaseStage isnt configured in notifyReleaseStages", ->
+      Bugsnag.configure releaseStage: "test"
       Bugsnag.configure notifyReleaseStages: ["production"]
       Bugsnag.notify("This is the message")
 
@@ -112,7 +131,7 @@ describe "Notification", ->
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace.should.be.an("array")
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace.should.have.length.of.at.least 2
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].should.have.keys("file", "lineNumber", "columnNumber", "method")
-      deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].file.should.contain "/error.js"
+      deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].file.should.contain path.sep + "error.js"
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].lineNumber.should.be.an "number"
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].columnNumber.should.be.an "number"
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].method.should.equal "Error"
@@ -122,13 +141,13 @@ describe "Notification", ->
       Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].should.not.have.property("inProject")
-      deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[2].should.have.property("inProject", true)
+      deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[3].should.have.property("inProject", true)
 
   describe "metaData", ->
     it "should allow configured metadata on Bugsnag object", ->
       Bugsnag.metaData =
         key: "value"
-      
+
       Bugsnag.notify("This is the message")
 
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key")
@@ -164,3 +183,15 @@ describe "Notification", ->
       deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value1")
 
       Bugsnag.metaData = null
+
+  describe "autoNotify", ->
+    it "should autoNotify with a default severity", (done) ->
+      Bugsnag.autoNotify {}, ->
+        process.nextTick ->
+          try
+            deliverStub.calledOnce.should.equal true
+            deliverStub.firstCall.thisValue.events[0].severity.should.equal "error"
+            done()
+          catch e
+            done(e)
+        throw new Error()

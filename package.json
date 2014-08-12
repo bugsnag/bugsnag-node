@@ -1,11 +1,12 @@
 {
     "name": "bugsnag",
     "description": "Bugsnag notifier for node.js scripts",
-    "version": "1.2.0",
+    "version": "1.4.0",
     "main": "./lib/bugsnag.js",
     "homepage": "http://bugsnag.com",
     "dependencies": {
-        "stack-trace": ">=0.0.6"
+        "stack-trace": ">=0.0.6",
+        "request": ">=2.36.0"
     },
     "devDependencies": {
         "mocha": "~1.8.0",
@@ -29,7 +30,7 @@
     ],
     "license": "MIT",
     "scripts": {
-        "test": "mocha"
+        "test": "mocha --compilers coffee:coffee-script/register"
     },
     "engine": {
         "node": ">=0.8"

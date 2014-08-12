@@ -22,7 +22,7 @@ module.exports = class Utils
       return null
 
   @fullPath: (unknownPath) ->
-    if unknownPath.indexOf(path.sep) == 0 then unknownPath else path.join(__dirname, unknownPath)
+    path.resolve(__dirname, unknownPath)
 
   @cloneObject: (obj, options = {}) ->
     return obj unless obj && @typeOf(obj) == "object"
@@ -30,7 +30,7 @@ module.exports = class Utils
     alreadyCloned = options.alreadyCloned || []
 
     copy = obj.constructor()
-    
+
     for key in Object.keys(obj)
       val = obj[key]
       if obj.hasOwnProperty(key) && except.indexOf(key) == -1
