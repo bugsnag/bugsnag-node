@@ -15,9 +15,9 @@ module.exports = requestInfo = (req) ->
     headers: req.headers
     httpVersion: req.httpVersion
   }
-  request.params = req.params if req.params && Object.keys(req.params).length > 0
-  request.query = req.query if req.query && Object.keys(req.query).length > 0
-  request.body = req.body if req.body && Object.keys(req.body).length > 0
+  request.params = req.params if req.params && typeof req.params == 'object' && Object.keys(req.params).length > 0
+  request.query = req.query if req.query && typeof req.params == 'object' && Object.keys(req.query).length > 0
+  request.body = req.body if req.body && typeof req.params == 'object' && Object.keys(req.body).length > 0
 
   if connection
     request.connection = {
