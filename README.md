@@ -252,6 +252,17 @@ You can use a proxy server by configuring a proxy url when registering with bugs
 bugsnag.register("your-api-key-here", { proxy: "http://localhost:8080" });
 ```
 
+### filters
+
+You can prevent some meta-data keys (such as passwords) from being sent to Bugsnag by listing
+them in the filters. This is most useful if you're sending request data and don't want to
+accidentally log a user's password. The keys are matched with substring matching, so the default
+value of `["password"]` also excludes things like `"password_confirmation"`.
+
+```javascript
+bugsnag.register("your-api-key-here", { filters: ["password", "creditcard"] }
+```
+
 Notify
 ------
 
