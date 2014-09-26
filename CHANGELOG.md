@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.5.0
+-----
+-   Allow use of a proxy when communicating with bugsnag
+
 1.4.0
 -----
 -   Don't send appVersion automatically
