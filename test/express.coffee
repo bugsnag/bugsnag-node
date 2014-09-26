@@ -38,7 +38,7 @@ describe "express middleware", ->
       assert.equal req.method, "GET"
       assert.equal req.headers.host, "localhost:#{port}"
       assert.equal req.httpVersion, "1.1"
-      assert.equal req.connection.remoteAddress, "127.0.0.1"
+      assert.notEqual ["127.0.0.1", "::ffff:127.0.0.1"].indexOf(req.connection.remoteAddress), -1
       assert.equal req.connection.localPort, port
       assert.equal req.connection.IPVersion, "IPv4"
       next()
