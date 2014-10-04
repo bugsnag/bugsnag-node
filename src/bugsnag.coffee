@@ -38,14 +38,14 @@ module.exports = class Bugsnag
         @notify err, {severity: "error"}, autoNotifyCallback(err, true)
 
   # Only error is required, and that can be a string or error object
-  @notify: (error, options, cb) ->
+  @notify: (error, options, cb) =>
     if Utils.typeOf(options) == "function"
       cb = options
       options = {}
 
     options ||= {}
 
-    unless shouldNotify()
+    unless @shouldNotify()
       cb() if cb
       return
 
@@ -108,7 +108,7 @@ module.exports = class Bugsnag
 
     return dom
 
-  shouldNotify = ->
+  @shouldNotify: ->
     ( Configuration.notifyReleaseStages == null || Configuration.notifyReleaseStages.indexOf(Configuration.releaseStage) != -1 ) && Configuration.apiKey
 
   autoNotifyCallback = (notifiedError, uncaughtError = notifiedError.domain) ->
