@@ -68,21 +68,16 @@ server.on("uncaughtException", function (req, res, route, e) {
 ```
 
 Using Koa
----------
+----------
 
-You can use a simple middleware that catches exceptions and sends them to Bugsnag. You should include this middleware
-after your error page middleware.
+If your app uses [Koa](http://koajs.com/), Bugsnag can automatically capture errors that happen during requests.
+
+To get notified of the errors in your app, just add the Bugsnag koa handler to your code.
 
 ```javascript
-app.use(function *(next) {
-  try {
-    yield next;
-  } catch (err) {
-    bugsnag.notify(err);
-    throw err;
-  }
-});
+app.on("error", bugsnag.koaHandler)
 ```
+
 
 Using Coffeescript
 ------------------
