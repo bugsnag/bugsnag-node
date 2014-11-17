@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.5.1
+-----
+-   Send correct content-length with utf8 strings
+
 1.5.0
 -----
 -   Allow use of a proxy when communicating with bugsnag

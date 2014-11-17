@@ -81,7 +81,7 @@ module.exports = class Notification
       body: payload
       headers:
         "Content-Type": 'application/json'
-        "Content-Length": payload.length
+        "Content-Length": Buffer.byteLength(payload, 'utf8')
 
     Configuration.logger.info payload
 
