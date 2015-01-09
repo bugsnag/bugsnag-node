@@ -67,6 +67,17 @@ server.on("uncaughtException", function (req, res, route, e) {
 });
 ```
 
+Using Koa
+-------------
+
+If your app uses [Koa](http://koajs.com/), Bugsnag can automatically capture errors that happen during requests.
+
+To get notified of the errors in your app, just add the Bugsnag koa handler to your code.
+
+```javascript
+app.on("error", bugsnag.koaHandler)
+```
+
 
 Using Coffeescript
 ------------------
