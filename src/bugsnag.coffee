@@ -75,14 +75,6 @@ module.exports = class Bugsnag
   @restifyHandler: (req, res, route, err) =>
     @notify err, {req: req, severity: "error"}, autoNotifyCallback(err)
 
-  # The error handler for koa.
-  @koaHandler: (err, ctx) =>
-    Configuration.logger.info "Handling koa error: #{err.stack || err}"
-    request = ctx.req
-    request.protocol = ctx.request.protocol
-    request.host = ctx.request.host.split(':', 1)[0]
-    @notify err, {req: request, severity: "error"}, autoNotifyCallback(err)
-
   # Intercepts the first argument from a callback and interprets it at as error.
   # if the error is not null it notifies bugsnag and doesn't call the callback
   @intercept: (cb) =>
