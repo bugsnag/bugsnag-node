@@ -4,17 +4,6 @@ module.exports = (grunt) ->
     # Package information
     pkg: grunt.file.readJSON "package.json"
 
-    # Coffeescript compilation
-    coffee:
-      glob_to_multiple:
-        expand: true
-        cwd: "src/"
-        src: ["*.coffee"]
-        dest: "lib/"
-        ext: ".js"
-      options:
-        bare: true
-
     # Version bumping
     bump:
       options: part: "patch"

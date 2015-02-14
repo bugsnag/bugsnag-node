@@ -49,7 +49,7 @@ describe "Notification", ->
     Bugsnag.notify("This is the message")
 
     deliverStub.firstCall.thisValue.events.length.should.equal 1
-    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device", "payloadVersion", "severity")
+    deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device", "payloadVersion", "severity", "metaData")
 
   describe "payloadVersion", ->
     it "should have a payloadVersion", ->
