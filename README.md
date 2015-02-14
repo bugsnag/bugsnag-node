@@ -142,7 +142,7 @@ The `autoNotify` function creates a Node.js [`Domain`](http://nodejs.org/api/dom
 Capturing Errors in Callback Functions
 --------------------------------------
 
-Many callback functions in Node are called with an error as the first arguement. Bugsnag can intercept these errors if you wrap your callback with  `bugsnag.intercept`:
+Many callback functions in Node are called with an error as the first argument. Bugsnag can intercept these errors if you wrap your callback with  `bugsnag.intercept`:
 
 ```javascript
 functionWithCallback(bugsnag.intercept(function(argument) {
