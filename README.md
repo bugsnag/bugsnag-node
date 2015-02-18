@@ -357,29 +357,7 @@ Please report any bugs or feature requests on the github issues page for this pr
 Contributing
 ------------
 
--   [Fork](https://help.github.com/articles/fork-a-repo) the [notifier on github](https://github.com/bugsnag/bugsnag-node)
--   Commit and push until you are happy with your contribution. Please only edit the coffeescript files.
--   [Make a pull request](https://help.github.com/articles/using-pull-requests)
--   Thanks!
-
-Releasing
----------
-
-Ensure all the coffee-script is compiled, and the tests pass:
-
-    grunt
-
-Bump the version number
-
-    grunt bump
-
-Push tag to github
-
-    grunt release
-
-Push code to npm
-
-    npm publish
+We love pull requests and issues. See [CONTRIBUTING.md](https://github.com/bugsnag/bugsnag-node/blob/master/CONTRIBUTING.md) for instructions :).
 
 License
 -------
