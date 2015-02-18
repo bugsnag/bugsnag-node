@@ -10,7 +10,6 @@ module.exports = (grunt) ->
       files: ["package.json"]
 
     mochaTest:
-      files: ["test/*.coffee"]
       options:
         reporter: "spec"
 
