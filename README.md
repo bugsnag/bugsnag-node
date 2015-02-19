@@ -292,6 +292,28 @@ value of `["password"]` also excludes things like `"password_confirmation"`.
 bugsnag.register("your-api-key-here", { filters: ["password", "creditcard"] }
 ```
 
+### onBeforeNotify
+
+If you want to modify error reports just before they are sent to Bugsnag, or prevent them from being sent,
+you can add before notify callbacks:
+
+```javascript
+Bugsnag.onBeforeNotify(function (notification) {
+
+    var metaData = notification.events[0].metaData;
+
+    // modify meta-data
+    metaData.app = {version: '0.3'}
+
+    // Don't log error reports from admins
+    if (metaData.user.is_admin) {
+        return false;
+    }
+});
+```
+
+You can add multiple beforeNotify callbacks, they'll be called in the order you add them.
+
 Notify
 ------
 
