@@ -54,6 +54,12 @@ describe("Notification", function() {
         deliverStub.firstCall.thisValue.apiKey.should.equal(apiKey);
     });
 
+    it("should allow overwriting the APIKey", function() {
+        var newKey = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        Bugsnag.notify("This is the message", {apiKey: newKey});
+        deliverStub.firstCall.thisValue.apiKey.should.equal(newKey);
+    });
+
     it("should contain an event", function() {
         Bugsnag.notify("This is the message");
         deliverStub.firstCall.thisValue.events.length.should.equal(1);
