@@ -3,6 +3,7 @@ var path = require("path"),
     should = require("chai").should(),
     sinon = require("sinon"),
     Bugsnag = require("../"),
+    Configuration = require("../lib/configuration"),
     Notification = require("../lib/notification"),
     apiKey = null,
     deliverStub = null;
@@ -22,11 +23,11 @@ beforeEach(function() {
 
 describe("Notification", function() {
     beforeEach(function() {
-        deliverStub = sinon.stub(Notification.prototype, "deliver");
+        deliverStub = sinon.stub(Notification.prototype, "_deliver");
     });
 
     afterEach(function() {
-        Notification.prototype.deliver.restore();
+        Notification.prototype._deliver.restore();
     });
 
     it("should call deliver once", function() {
@@ -231,6 +232,37 @@ describe("Notification", function() {
             deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key");
             deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value1");
             Bugsnag.metaData = null;
+        });
+    });
+
+    describe("beforeNotifyCallbacks", function () {
+        it("should allow overwriting of meta-data in beforeNotify", function () {
+            Bugsnag.metaData = {
+                key: "value"
+            };
+            Bugsnag.onBeforeNotify(function (notification) {
+                var event = notification.events[0];
+                event.metaData.key += "2";
+            });
+
+            Bugsnag.notify("this is an outrage");
+
+            deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key");
+            deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value2");
+
+            Configuration.beforeNotifyCallbacks = [];
+        });
+
+        it("should allow ignoring of errors", function () {
+            Bugsnag.onBeforeNotify(function (notification) {
+                return false;
+            });
+
+            Bugsnag.notify("this is an outrage");
+
+            deliverStub.calledOnce.should.equal(false);
+
+            Configuration.beforeNotifyCallbacks = [];
         });
     });
 
