@@ -286,6 +286,17 @@
                 original.should.have.keys("firstKey", "secondKey", "thirdKey");
                 original.secondKey.should.be.an("object");
             });
+
+            it("should deal with objects that don't have hasOwnProperty", function () {
+                var data = Object.create(null);
+
+                data.foo = 'bar';
+                data.password = '$secret';
+                Utils.filterObject(data, ['password']);
+
+                data.foo.should.equal('bar')
+                data.password.should.equal('[FILTERED]')
+            });
         });
     });
 
