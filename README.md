@@ -67,6 +67,22 @@ server.on("uncaughtException", function (req, res, route, e) {
 });
 ```
 
+Using Koa
+---------
+
+You can use a simple middleware that catches exceptions and sends them to Bugsnag. You should include this middleware
+after your error page middleware.
+
+```javascript
+app.use(function *(next) {
+  try {
+    yield next;
+  } catch (err) {
+    bugsnag.notify(err);
+    throw err;
+  }
+});
+```
 
 Using Coffeescript
 ------------------
