@@ -92,6 +92,19 @@ When executing coffeecript code directly using the `coffee` executable, Bugsnag 
 To avoid this issue, make sure to compile your coffeescript files into javascript before running your app.
 
 
+Using Promises
+--------------
+
+If you're using a promises library such as Bluebird or when.js, you can listen to unhandled promise rejections.
+See [this document](https://gist.github.com/benjamingr/0237932cee84712951a2) for more details.
+
+```javascript
+process.on('unhandledRejection', function (err, promise) {
+    console.error("Unhandled rejection: " + (err && err.stack || err));
+    bugsnag.notify(err);
+});
+```
+
 Send Non-Fatal Exceptions to Bugsnag
 ------------------------------------
 
