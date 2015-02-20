@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.6.0
+-----
+-   Fix out of memory error caused by bugsnag.requestHandler
+-   Convert source code to js
+-   Support for Bugsnag.onBeforeNotify
+-   Support for passing apiKey to notify
+
 1.5.1
 -----
 -   Send correct content-length with utf8 strings
