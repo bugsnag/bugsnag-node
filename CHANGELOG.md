@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.1
+-----
+-   Support for hostname on more recent versions of express
+
 1.6.0
 -----
 -   Fix out of memory error caused by bugsnag.requestHandler
