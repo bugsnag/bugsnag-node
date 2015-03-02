@@ -396,6 +396,15 @@ bugsnag.notify(new Error("Something went badly wrong"), function (error, respons
 })
 ```
 
+Per-request metaData
+--------------------
+
+If you are using our express middleware, or otherwise using domains, you can set per-request metaData.
+This metaData will be sent with any crashes occurring during the current request.
+
+```javascript
+bugsnag.requestData.user = {id: 5}
+```
 
 Reporting Bugs or Feature Requests
 ----------------------------------

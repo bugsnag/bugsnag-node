@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.2
+-----
+-   Expose bugsnag.requestData
+
 1.6.1
 -----
 -   Support for hostname on more recent versions of express
