@@ -53,6 +53,19 @@
             });
             deliverStub.calledOnce.should.equal(true);
         });
+
+        it("should expose requestData when inside a domain", function () {
+            var mainDomain;
+            mainDomain = domain.create();
+            mainDomain.on("error", Bugsnag.notify);
+            mainDomain.run(function() {
+                Bugsnag.requestData = {user: {id: 5}};
+                var eventEmitter = new (require('events').EventEmitter)();
+                eventEmitter.emit("error", new Error("Something went wrong"));
+            });
+            deliverStub.calledOnce.should.equal(true);
+            deliverStub.firstCall.thisValue.events[0].metaData.user.id.should.equal(5);
+        });
     });
 
     describe("Bugsnag", function() {
