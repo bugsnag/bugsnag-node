@@ -93,7 +93,7 @@ describe("Notification", function() {
             Bugsnag.notify("This is the message", {
                 userId: "TempId"
             });
-            deliverStub.firstCall.thisValue.events[0].userId.should.equal("TempId");
+            deliverStub.firstCall.thisValue.events[0].user.id.should.equal("TempId");
         });
     });
 
