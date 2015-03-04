@@ -54,7 +54,7 @@
             deliverStub.calledOnce.should.equal(true);
         });
 
-        it("should expose requestData when inside a domain", function () {
+        it("should expose requestData when inside a domain and using user.id", function () {
             var mainDomain;
             mainDomain = domain.create();
             mainDomain.on("error", Bugsnag.notify);
@@ -67,7 +67,7 @@
             deliverStub.firstCall.thisValue.events[0].user.id.should.equal(5);
         });
 
-        it("should expose requestData when inside a domain", function () {
+        it("should expose requestData when inside a domain using userId", function () {
             var mainDomain;
             mainDomain = domain.create();
             mainDomain.on("error", Bugsnag.notify);
