@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.3
+-----
+-   Fix user.id coming in through requestData
+
 1.6.2
 -----
 -   Expose bugsnag.requestData
