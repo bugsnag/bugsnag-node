@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.4
+-----
+-   Fix objectClone's use of obj.constructor
+
 1.6.3
 -----
 -   Fix user.id coming in through requestData
