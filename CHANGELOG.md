@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.5
+-----
+-   Koa support
+
 1.6.4
 -----
 -   Fix objectClone's use of obj.constructor
