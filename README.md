@@ -287,6 +287,14 @@ value of `["password"]` also excludes things like `"password_confirmation"`.
 bugsnag.register("your-api-key-here", { filters: ["password", "creditcard"] }
 ```
 
+### hostname
+
+By default we'll fetch the hostname using Node's [os.hostname()](https://nodejs.org/api/os.html#os_os_hostname), but you can override this as follows:
+
+```javascript
+bugsnag.register("your-api-key-here", { hostname: "web1.example.com" }
+```
+
 ### onBeforeNotify
 
 If you want to modify error reports just before they are sent to Bugsnag, or prevent them from being sent,
