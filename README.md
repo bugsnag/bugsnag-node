@@ -391,7 +391,7 @@ A callback to call after notifying Bugsnag of an error. The callback has two arg
 
 ```javascript
 bugsnag.notify(new Error("Something went badly wrong"), function (error, response) {
-  if(err) {
+  if(error) {
     // Something went wrong
   } else {
     // The notify worked
