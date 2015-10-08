@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.6
+-----
+-   Fix for accidental global variables.
+
 1.6.5
 -----
 -   Koa support
