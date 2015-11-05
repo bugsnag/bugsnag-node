@@ -315,6 +315,19 @@ Bugsnag.onBeforeNotify(function (notification) {
 });
 ```
 
+### sendCode
+
+If you want to send code snippets for each frame of the stacktrace you can enable `sendCode`. This asynchronously loads
+any file from the stacktrace, which is within the scope of the project, and sends 3 lines either side of the erroneous line
+of code to Bugsnag.
+
+This works almost the same as how Bugsnag JavaScript projects handle sourcemaps - however loading the code is done on the
+local machine and sent over the internet with the error data.
+
+```javascript
+bugsnag.register("your-api-key-here", { sendCode: true });
+```
+
 You can add multiple beforeNotify callbacks, they'll be called in the order you add them.
 
 Notify
