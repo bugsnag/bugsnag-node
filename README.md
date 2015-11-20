@@ -315,6 +315,8 @@ Bugsnag.onBeforeNotify(function (notification) {
 });
 ```
 
+You can add multiple beforeNotify callbacks, they'll be called in the order you add them.
+
 ### sendCode
 
 If you want to send code snippets for each frame of the stacktrace you can enable `sendCode`. This asynchronously loads
@@ -327,8 +329,6 @@ local machine and sent over the internet with the error data.
 ```javascript
 bugsnag.register("your-api-key-here", { sendCode: true });
 ```
-
-You can add multiple beforeNotify callbacks, they'll be called in the order you add them.
 
 Notify
 ------
