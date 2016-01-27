@@ -1,6 +1,22 @@
 Changelog
 =========
 
+## 1.7.0 (2016-01-27)
+
+### Bug Fixes
+
+* Relax `request` and `promise` dependency requirements to allow patched updates
+  [Jakub Pawlowicz](https://github.com/jakubpawlowicz)
+  [#70](https://github.com/bugsnag/bugsnag-node/pull/70)
+  [#71](https://github.com/bugsnag/bugsnag-node/issues/71)
+
+### Enhancements
+
+* Added support for sending code snippets
+  [Jacob Marshall](https://github.com/jacobmarshall)
+  [#65](https://github.com/bugsnag/bugsnag-node/issues/65)
+  [#67](https://github.com/bugsnag/bugsnag-node/pull/67)
+
 1.6.6
 -----
 -   Fix for accidental global variables.
