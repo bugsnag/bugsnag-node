@@ -82,7 +82,7 @@ app.on("error", bugsnag.koaHandler)
 Using Coffeescript
 ------------------
 
-When executing coffeecript code directly using the `coffee` executable, Bugsnag cannot notify about uncaught exceptions that occur at the top level of your app. This is due to a ["feature"](https://github.com/jashkenas/coffee-script/issues/1438) of the `coffee` executable.
+When executing coffeecript code directly using the `coffee` executable, Bugsnag cannot notify about uncaught exceptions that occur at the top level of your app as [the `coffee` executable wraps modules in a try/catch](https://github.com/jashkenas/coffeescript/issues/1438).
 
 To avoid this issue, make sure to compile your coffeescript files into javascript before running your app.
 
