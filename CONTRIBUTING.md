@@ -62,3 +62,7 @@ If you're a member of the Bugsnag team.
 1. grunt release
 1. npm publish
 
+### Update docs.bugsnag.com
+
+Update the setup guides for JavaScript and CoffeeScript with Node with any new
+content.
