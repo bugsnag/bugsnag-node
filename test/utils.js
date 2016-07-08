@@ -229,7 +229,7 @@
                     firstKey: "firstValue",
                 secondKey: "secondValue"
                 };
-                Utils.filterObject(testObject, ["firstKey"]);
+                testObject = Utils.filterObject(testObject, ["firstKey"]);
                 testObject.should.have.keys(["firstKey", "secondKey"]);
                 testObject.should.have.property("firstKey", "[FILTERED]");
                 testObject.should.have.property("secondKey", "secondValue");
@@ -249,7 +249,7 @@
                 }
                 }
                 };
-                Utils.filterObject(testObject, ["firstKey", "thirdKey", "thirdObject"]);
+                testObject = Utils.filterObject(testObject, ["firstKey", "thirdKey", "thirdObject"]);
                 testObject.should.have.keys(["firstKey", "firstObject"]);
                 testObject.should.have.property("firstKey", "[FILTERED]");
                 testObject.should.have.property("firstObject").should.be.an("object");
@@ -292,7 +292,7 @@
 
                 data.foo = 'bar';
                 data.password = '$secret';
-                Utils.filterObject(data, ['password']);
+                data = Utils.filterObject(data, ['password']);
 
                 data.foo.should.equal('bar')
                 data.password.should.equal('[FILTERED]')
