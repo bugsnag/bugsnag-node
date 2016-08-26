@@ -1,6 +1,29 @@
 Changelog
 =========
 
+## 1.8.0 (2016-08-26)
+
+### Enhancements
+
+* Add option to set custom headers
+  [#83](https://github.com/bugsnag/bugsnag-node/pull/83)
+* Use `error.name` instead of `error.constructor.name` where available
+  [Jyrki Laurila](https://github.com/jylauril)
+  [#77](https://github.com/bugsnag/bugsnag-node/pull/77)
+* Invoke notify callback with errors
+  [Jacob Marshall](https://github.com/jacobmarshall)
+  [#80](https://github.com/bugsnag/bugsnag-node/pull/80)
+
+### Bug Fixes
+
+* Fix setting default project root when `require.main.filename` does not exist
+* Clone objects before filtering to avoid modifying referenced objects
+  [Percy Hatcherson](https://github.com/primitive-type)
+  [#82](https://github.com/bugsnag/bugsnag-node/pull/82)
+* Remove duplicated scrubbed metadata from request payloads
+  [#72](https://github.com/bugsnag/bugsnag-node/pull/72)
+
+
 ## 1.7.0 (2016-01-27)
 
 ### Bug Fixes
