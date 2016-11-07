@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 1.9.0 (2016-11-07)
+
+### Enhancements
+
+* Added `createErrorHandler` and `createRequestHandler` express middleware factories
+  [Jonathan Samines](https://github.com/jonathansamines)
+  [#88](https://github.com/bugsnag/bugsnag-node/pull/88)
+
 ## 1.8.0 (2016-08-26)
 
 ### Enhancements
