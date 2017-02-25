@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 1.9.1 (2017-02-24)
+
+### Bug Fixes
+
+* Fix premature return in configure, leading to `sendCode` not being updated
+  [Jacob Marshall](https://github.com/jacobmarshall)
+  [#92](https://github.com/bugsnag/bugsnag-node/pull/92)
+
 ## 1.9.0 (2016-11-07)
 
 ### Enhancements
