@@ -16,7 +16,7 @@ app.use(bugsnag.requestHandler);
 // impact our *bad* code is having on our user base.
 app.use(loadSession);
 
-// Our sample login endpoint for this example app. You can try this endpoint our for yourself.
+// Our sample login endpoint for this example app. You can try this endpoint out for yourself.
 //
 // Failed login attempt
 //
@@ -65,7 +65,7 @@ app.post("/login", (req, res, next) => {
 
 // We also need to add the bugsnag error handler middleware, which catches any unhandled errors
 // within your routes (like the one above) and sends them to Bugsnag, along with the request information
-// the error occured in, to make debugging errors *that* much easier.
+// the error occurred in, to make debugging errors *that* much easier.
 app.use(bugsnag.errorHandler);
 
 app.listen(process.env.PORT || 3000);

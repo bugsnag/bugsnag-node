@@ -1,7 +1,7 @@
 const bugsnag = require("bugsnag");
 const unhandledRejection = require("unhandled-rejection");
 
-// Here we register the bugsnag client using our project's API key, and optionally pass our
+// Here we register the Bugsnag client using our project's API key, and optionally pass our
 // Bugsnag configuration. For example, we can enable `sendCode` so we're able to see the code
 // within our app straight from the Bugsnag error report page.
 bugsnag.register("API-KEY-GOES-HERE", {
