@@ -1,9 +1,10 @@
 var path = require("path"),
     should = require("chai").should(),
     sinon = require("sinon"),
-    Bugsnag = require("../"),
-    Configuration = require("../lib/configuration"),
-    Notification = require("../lib/notification"),
+    libpath = process.env['BUGSNAG_COV'] ? '../lib-cov/' : '../lib/',
+    Bugsnag = require(libpath + "bugsnag"),
+    Configuration = require(libpath + "configuration"),
+    Notification = require(libpath + "notification"),
     request = require("request"),
     apiKey = null,
     deliverStub = null;
