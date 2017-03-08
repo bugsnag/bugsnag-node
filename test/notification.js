@@ -298,6 +298,19 @@ describe("Notification", function() {
 
             Configuration.beforeNotifyCallbacks = [];
         });
+
+        it("should invoke notify callback when ignoring via callback", function () {
+            var callbackInvoked = false;
+            Bugsnag.onBeforeNotify(function (notification) {
+                return false;
+            });
+
+            Bugsnag.notify("this is an outrage", function() {
+                callbackInvoked = true
+            });
+            callbackInvoked.should.equal(true);
+            Configuration.beforeNotifyCallbacks = [];
+        });
     });
 
     describe("autoNotify", function() {
