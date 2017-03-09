@@ -44,6 +44,25 @@
             deliverStub.calledOnce.should.equal(true);
         });
 
+        it("stores metadata", function() {
+            Bugsnag.metaData.red = "23";
+            Bugsnag.metaData.red.should.equal("23");
+        });
+
+        it("stores request data when domain is set", function() {
+            process.domain = {};
+            var requestData = { method: "POST", path: "/" };
+            Bugsnag.requestData = requestData;
+            Bugsnag.requestData.should.equal(requestData);
+            process.domain = null;
+        });
+
+        it("discards request data when domain is unset", function() {
+            var requestData = { method: "POST", path: "/" };
+            Bugsnag.requestData = requestData;
+            Bugsnag.should.not.have.property(requestData)
+        });
+
         it("should call deliver when notifying with a domain, using event emitter", function() {
             var mainDomain;
             mainDomain = domain.create();
