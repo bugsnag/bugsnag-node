@@ -49,6 +49,12 @@
 
         });
 
+        describe("getPackageVersion", function() {
+            it("returns null for an invalid package", function() {
+                should.not.exist(Utils.getPackageVersion("fruitloop"));
+            });
+        });
+
         describe("cloneObject", function() {
             it("should return an object with the same properties", function() {
                 var clone, original;
@@ -140,6 +146,10 @@
                 clone.should.have.keys("firstKey", "secondKey");
                 return clone.secondKey.should.be.an("object");
             });
+
+            it("should return input if not an object", function() {
+                Utils.cloneObject(67).should.equal(67);
+            });
         });
 
         describe("mergeObjects", function() {
@@ -222,6 +232,15 @@
                 destination.should.have.keys("firstKey", "secondKey", "thidKey");
                 destination.secondKey.should.be.an("object");
             });
+
+            it("returns the target object if the target is not an object", function() {
+                Utils.mergeObjects(67, 44).should.equal(67);
+            });
+
+            it("returns the target object if the source is not an object", function() {
+                var destination = {}
+                Utils.mergeObjects(destination, 44).should.equal(destination);
+            });
         });
 
         describe("filterObject", function() {
@@ -298,6 +317,10 @@
 
                 data.foo.should.equal('bar')
                 data.password.should.equal('[FILTERED]')
+            });
+
+            it("returns null if the source is not an object", function() {
+                should.not.exist(Utils.filterObject("="))
             });
         });
     });
