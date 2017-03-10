@@ -287,6 +287,10 @@ describe("Notification", function() {
             Configuration.beforeNotifyCallbacks = [];
         });
 
+        it("throws when argument is not a function", function() {
+            should.Throw(function() { Bugsnag.onBeforeNotify({}) });
+        });
+
         it("should allow ignoring of errors", function () {
             Bugsnag.onBeforeNotify(function (notification) {
                 return false;
