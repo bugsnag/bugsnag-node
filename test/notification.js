@@ -9,14 +9,14 @@ var path = require("path"),
     apiKey = null,
     deliverStub = null;
 
-before(function() {
-    apiKey = "71ab53572c7b45316fb894d446f2e11d";
-    Bugsnag.register(apiKey, {
-        notifyReleaseStages: ["production", "development"]
-    });
-});
-
 describe("Notification transport", function() {
+    before(function() {
+        apiKey = "71ab53572c7b45316fb894d446f2e11d";
+        Bugsnag.register(apiKey, {
+            notifyReleaseStages: ["production", "development"]
+        });
+    });
+
     beforeEach(function() {
         sinon.stub(request, "post");
     });
