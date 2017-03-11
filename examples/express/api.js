@@ -1,8 +1,8 @@
-const bugsnag = require('./bugsnag');
+const bugsnag = require("./bugsnag");
 
 function attemptLogin(username, password) {
   return new Promise((resolve, reject) => {
-    if (username === 'crash') {
+    if (username === "crash") {
       // Obviously you wouldn't expect to see this in your production app, but here is an example of what
       // you might have underlying your database abstraction.
       reject(new Error(`Unable to connect to database`));

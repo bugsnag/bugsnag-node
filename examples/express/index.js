@@ -42,16 +42,16 @@ app.post("/login", (req, res, next) => {
   attemptLogin(username, password)
     .then(user => {
       if (user) {
-        res.send('Logged in!');
+        res.send("Logged in!");
       } else {
-        res.status(400).send('Invalid username or password.');
+        res.status(400).send("Invalid username or password.");
 
         bugsnag.notify(new Error("Failed login attempt"), {
           // Maybe you have a system in place to block a particular IP address, or account if there are
           // too many failed attempts within a specified time period? Why not send this event to Bugsnag?
           attempt: {
             username,
-            ip: '192.168.100.16',
+            ip: "192.168.100.16",
             tries: 4,
           },
         });
