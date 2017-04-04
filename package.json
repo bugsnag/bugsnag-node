@@ -3,6 +3,7 @@
     "description": "Bugsnag notifier for node.js scripts",
     "version": "1.9.1",
     "main": "./lib/bugsnag.js",
+    "typings": "./lib/bugsnag.d.ts",
     "homepage": "http://bugsnag.com",
     "dependencies": {
         "promise": "7.x",
