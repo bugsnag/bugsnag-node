@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 1.10.0 (2017-04-06)
+
+### Enhancements
+
+* Add typescript definitions
+  [Iker Pérez Brunelli](https://github.com/DarkerTV)
+  [#97](https://github.com/bugsnag/bugsnag-node/pull/97)
+
 ## 1.9.1 (2017-02-24)
 
 ### Bug Fixes
