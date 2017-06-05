@@ -221,6 +221,19 @@ describe("Notification", function() {
             deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].should.not.have.property("inProject");
             deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[3].should.have.property("inProject", true);
         });
+
+        it("should discard custom error metaData", function() {
+            MyError = function(message, customProp) {
+                this.message = message;
+                this.customProp = customProp;
+            };
+            MyError.prototype = Object.create(Error.prototype);
+            MyError.prototype.constructor = MyError;
+            Bugsnag.notify(new MyError("This is the message", "custom prop"));
+            deliverStub.firstCall.thisValue.events[0].exceptions.length.should.equal(1);
+            deliverStub.firstCall.thisValue.events[0].exceptions[0].should.have.keys("errorClass", "message", "stacktrace");
+            deliverStub.firstCall.thisValue.events[0].exceptions[0].should.not.have.keys("metaData", "customProp");
+        });
     });
 
     describe("metaData", function() {
@@ -263,6 +276,23 @@ describe("Notification", function() {
                 key: "value1"
             });
             deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key");
+            deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value1");
+            Bugsnag.metaData = null;
+        });
+
+        it("should add custom exception props", function() {
+            MyError = function(message, customProp) {
+                this.message = message;
+                this.customProp = customProp;
+            };
+            MyError.prototype = Object.create(Error.prototype);
+            MyError.prototype.constructor = MyError;
+            Bugsnag.notify(new MyError("This is the message", "custom prop"), {
+                key: "value1"
+            });
+            deliverStub.firstCall.thisValue.events[0].metaData.should.have.keys("key", "CustomExceptions");
+            deliverStub.firstCall.thisValue.events[0].metaData.CustomExceptions.length.should.equal(1);
+            deliverStub.firstCall.thisValue.events[0].metaData.CustomExceptions[0].should.deep.equal({ "customProp": "custom prop" });
             deliverStub.firstCall.thisValue.events[0].metaData.should.have.property("key", "value1");
             Bugsnag.metaData = null;
         });

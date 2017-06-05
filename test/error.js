@@ -36,6 +36,19 @@
       errors = BugsnagError.buildErrors(error);
       return errors.length.should.equal(1);
     });
+    it("should copy custom error props", function () {
+      var error, errors, MyError;
+      MyError = function(message, customProp) {
+        this.message = message;
+        this.customProp = customProp;
+      };
+      MyError.prototype = Object.create(Error.prototype);
+      MyError.prototype.constructor = MyError;
+      error = new MyError("error", "custom prop");
+      errors = BugsnagError.buildErrors(error);
+      errors.length.should.equal(1);
+      return errors[0].metaData.customProp.should.equal("custom prop");
+    });
     return it("should support oath errors", function() {
       var error, errors;
       error = new Error("error");
