@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## 1.11.0 (2017-06-08)
+
+### Enhancements
+
+* Add the error which caused a report to be generated as a parameter to
+  `beforeNotifyCallbacks`.
+  [#101](https://github.com/bugsnag/bugsnag-node/issues/101)
+  [#103](https://github.com/bugsnag/bugsnag-node/pull/103)
+
 ## 1.10.0 (2017-04-06)
 
 ### Enhancements
