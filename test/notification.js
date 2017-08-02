@@ -113,6 +113,19 @@ describe("Notification", function() {
         payloadObject.items.nestedNotification.should.equal("[RECURSIVE]");
     });
 
+    it("should handle identical sibling fields in the payload", function() {
+        Bugsnag.onBeforeNotify(function(notification) {
+          var obj = { foo: 'bar' };
+          notification.items = { a: obj, b: obj };
+          return true;
+        });
+        Bugsnag.notify("This is the message");
+        var payload = deliverStub.firstCall.thisValue.serializePayload();
+        var payloadObject = JSON.parse(payload)
+        payloadObject.items.a.foo.should.equal('bar');
+        payloadObject.items.b.foo.should.equal('bar');
+    });
+
     describe("payloadVersion", function() {
         it("should have a payloadVersion", function() {
             Bugsnag.notify("This is the message");
