@@ -8,7 +8,8 @@
     "dependencies": {
         "promise": "7.x",
         "stack-trace": "~0.0.9",
-        "request": "^2.81.0"
+        "request": "^2.81.0",
+        "json-stringify-safe": "~5.0.1"
     },
     "devDependencies": {
         "mocha": "latest",
