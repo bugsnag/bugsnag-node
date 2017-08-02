@@ -1,6 +1,31 @@
 Changelog
 =========
 
+## 1.12.0 (2017-08-02)
+
+### Enhancements
+
+* Improved performance during filtering
+  [Patrick Lorio](https://github.com/loriopatrick)
+  [#106](https://github.com/bugsnag/bugsnag-node/pull/106)
+
+* Show metadata elements removed within circular reference checking as
+  `[REDACTED]`
+  [#108](https://github.com/bugsnag/bugsnag-node/pull/108)
+
+* Add support for passing per-request metadata in Koa
+  [Jacob Marshall](https://github.com/jacobmarshall)
+
+* Allow newer versions of `stack-trace` dependency
+  [Kevin Glowacz](https://github.com/kjg)
+  [#100](https://github.com/bugsnag/bugsnag-node/pull/106)
+
+### Bug fixes
+
+* Update `request` minimum version to fix `tunnel-agent` vulnerability
+  [Jacob Marshall](https://github.com/jacobmarshall)
+  [#105](https://github.com/bugsnag/bugsnag-node/pull/105)
+
 ## 1.11.0 (2017-06-08)
 
 ### Enhancements
