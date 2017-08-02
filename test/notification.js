@@ -110,7 +110,7 @@ describe("Notification", function() {
         Bugsnag.notify("This is the message");
         var payload = deliverStub.firstCall.thisValue.serializePayload();
         var payloadObject = JSON.parse(payload)
-        payloadObject.items.should.not.have.keys("nestedNotification");
+        payloadObject.items.nestedNotification.should.equal("[RECURSIVE]");
     });
 
     describe("payloadVersion", function() {
