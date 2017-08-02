@@ -61,6 +61,7 @@ describe("Notification", function() {
 
     afterEach(function() {
         Notification.prototype._deliver.restore();
+        Configuration.beforeNotifyCallbacks = []
     });
 
     it("should call deliver once", function() {
@@ -98,6 +99,18 @@ describe("Notification", function() {
         Bugsnag.notify("This is the message");
         deliverStub.firstCall.thisValue.events.length.should.equal(1);
         deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device", "payloadVersion", "severity", "metaData");
+    });
+
+    it("should handle recursive fields in the payload", function() {
+        Bugsnag.onBeforeNotify(function(notification) {
+          notification.items = {}
+          notification.items.nestedNotification = notification;
+          return true;
+        });
+        Bugsnag.notify("This is the message");
+        var payload = deliverStub.firstCall.thisValue.serializePayload();
+        var payloadObject = JSON.parse(payload)
+        payloadObject.items.should.not.have.keys("nestedNotification");
     });
 
     describe("payloadVersion", function() {
