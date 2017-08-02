@@ -57,6 +57,7 @@ If you're a member of the Bugsnag team.
 ### Doing a release
 
 1. Update version in package.json.
+1. Update the version in `lib/notification.js`
 1. Update the CHANGELOG.md
 1. Update the README if required
 1. grunt release
