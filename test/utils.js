@@ -287,6 +287,60 @@
                 original.secondKey.should.be.an("object");
             });
 
+            it("should have reasonable performance", function() {
+                var obj = {};
+                for (var i = 0; i < 100; ++i) {
+                    var sub = obj[i] = {};
+                    for (var j = 0; j < 10; ++j) {
+                        sub[j] = {
+                            test: j
+                        };
+                    }
+                }
+
+                var filter = [];
+                for (var k = 0; k < 10; ++k) {
+                    filter.push('item' + k);
+                }
+
+                Utils.filterObject(obj, filter);
+            });
+
+            it("should deal with circular references in array", function() {
+                var obj = {
+                    items: []
+                };
+                obj.items.push(obj);
+                obj.items.push(obj.items);
+                obj.items.push({ secret: "private data" });
+
+                var filtered = Utils.filterObject(obj, ["secret"]);
+                filtered.items[2].secret.should.equal("[FILTERED]");
+            });
+
+            it("should deal with complex circular references", function() {
+                var obj = {
+                    item: {},
+                    test: {
+                        sub: {}
+                    }
+                };
+
+                obj.item.item = obj.item;
+                obj.item.obj = obj;
+                obj.test.sub.item = obj.item;
+                obj.test.sub.remove = "remove this";
+
+                var filtered = Utils.filterObject(obj, ["remove"]);
+                filtered.should.have.keys("item", "test");
+                filtered.item.should.have.keys("item", "obj");
+                filtered.test.should.have.keys("sub");
+                filtered.test.sub.should.have.keys("item", "remove");
+                filtered.test.sub.remove.should.equal('[FILTERED]');
+
+                obj.test.sub.remove.should.equal('remove this');
+            });
+
             it("should deal with objects that don't have hasOwnProperty", function () {
                 var data = Object.create(null);
 

@@ -297,6 +297,24 @@ describe("Notification", function() {
 
             Configuration.beforeNotifyCallbacks = [];
         });
+
+        it("should allow introspecting the original error object", function () {
+            function SpecialError(message) {
+              this.name = "SpecialError";
+              this.message = message;
+              this.customInfo = {times: "three"};
+            }
+            SpecialError.prototype = Object.create(Error.prototype);
+
+            var error = new SpecialError("there is a glitch");
+            Bugsnag.onBeforeNotify(function (notification, error) {
+              notification.events[0].metaData.customInfo = error.customInfo;
+            });
+            Bugsnag.notify(error);
+            deliverStub.firstCall.thisValue.events[0].metaData.customInfo.should.have.property("times", "three");
+
+            Configuration.beforeNotifyCallbacks = [];
+        });
     });
 
     describe("autoNotify", function() {
