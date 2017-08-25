@@ -18,10 +18,12 @@ before(function() {
 describe("Notification transport", function() {
     beforeEach(function() {
         sinon.stub(request, "post");
+        sinon.stub(Notification.prototype, "loadCode").callsArg(0);
     });
 
     afterEach(function() {
         request.post.restore();
+        Notification.prototype.loadCode.restore();
     });
 
     it("sets the application type as JSON", function() {
@@ -57,11 +59,13 @@ describe("Notification", function() {
             notifyReleaseStages: ["production", "development"]
         });
         deliverStub = sinon.stub(Notification.prototype, "_deliver");
+        sinon.stub(Notification.prototype, "loadCode").callsArg(0);
     });
 
     afterEach(function() {
         Notification.prototype._deliver.restore();
         Configuration.beforeNotifyCallbacks = []
+        Notification.prototype.loadCode.restore();
     });
 
     it("should call deliver once", function() {

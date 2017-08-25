@@ -18,11 +18,13 @@
     describe("Bugsnag", function() {
 
         beforeEach(function() {
-            return deliverStub = sinon.stub(Notification.prototype, "deliver");
+            deliverStub = sinon.stub(Notification.prototype, "deliver");
+            sinon.stub(Notification.prototype, "loadCode").callsArg(0);
         });
 
         afterEach(function() {
-            return Notification.prototype.deliver.restore();
+            Notification.prototype.deliver.restore();
+            Notification.prototype.loadCode.restore();
         });
 
         it("should call deliver when notifying a caught error", function() {
