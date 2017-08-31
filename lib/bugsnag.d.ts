@@ -43,7 +43,6 @@ declare namespace bugsnag {
         projectRoot?: string;
         packageJSON?: string;
         sendCode?: boolean;
-        logAllDeliveryErrors?: boolean;
     }
 
     interface NotifyOptions {
