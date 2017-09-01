@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 1.12.1 (2017-09-01)
+
+### Enhancements
+
+* Stop swallowing errors when `shouldNotify() == false`
+  [Alex Moinet](https://github.com/Cawllec)
+  [#113](https://github.com/bugsnag/bugsnag-node/pull/113)
+
 ## 1.12.0 (2017-08-02)
 
 ### Enhancements
