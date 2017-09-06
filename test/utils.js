@@ -352,7 +352,7 @@ describe("utils", function() {
 
     describe("sensibleReplacer", function () {
         JSON.stringify({ a: undefined }, Utils.sensibleReplacer).should.equal("{\"a\":\"undefined\"}");
-        JSON.stringify({ a: function () {} }, Utils.sensibleReplacer).should.equal("{\"a\":\"[function a()]\"}");
+        JSON.stringify({ a: function a() {} }, Utils.sensibleReplacer).should.equal("{\"a\":\"[function a()]\"}");
         JSON.stringify({ a: [ function () {} ] }, Utils.sensibleReplacer).should.equal("{\"a\":[\"[anonymous function]\"]}");
     });
 });
