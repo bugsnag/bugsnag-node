@@ -367,4 +367,30 @@ describe("Notification", function() {
             });
         });
     });
+
+    describe("bad input", function() {
+        it("notify(err) should handle bad input", function () {
+          should.not.throw(function () {
+              Bugsnag.notify(null);
+          });
+          should.not.throw(function () {
+              Bugsnag.notify(undefined);
+          });
+          should.not.throw(function () {
+              Bugsnag.notify(0);
+          });
+          should.not.throw(function () {
+              Bugsnag.notify([]);
+          });
+          should.not.throw(function () {
+              Bugsnag.notify(new Date());
+          });
+          should.not.throw(function () {
+              Bugsnag.notify(false);
+          });
+          should.not.throw(function () {
+              Bugsnag.notify(true);
+          });
+        });
+    });
 });
