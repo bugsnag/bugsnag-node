@@ -8,7 +8,8 @@ var path = require("path"),
     Notification = require("../lib/notification"),
     request = require("request"),
     apiKey = null,
-    deliverStub = null;
+    deliverStub = null,
+    child_process = require("child_process");
 
 before(function() {
     apiKey = "71ab53572c7b45316fb894d446f2e11d";
@@ -364,6 +365,34 @@ describe("Notification", function() {
                     }
                 });
                 throw new Error();
+            });
+        });
+    });
+
+    describe("dealing with process unhandled/uncaught events", function () {
+        it("should automatically report process#uncaughtException events", function (done) {
+            var p = child_process.fork(__dirname + "/lib/process-uncaught-exception.js");
+            var deliverCalled = false;
+            p.on("message", function (msg) {
+                deliverCalled = msg.deliverCalled;
+            });
+            p.on("exit", function (code) {
+                code.should.equal(1);
+                deliverCalled.should.equal(true);
+                done();
+            });
+        });
+
+        it("should automatically report process#unhandledRejection events", function (done) {
+            var p = child_process.fork(__dirname + "/lib/process-unhandled-rejection.js");
+            var deliverCalled = false;
+            p.on("message", function (msg) {
+                deliverCalled = msg.deliverCalled;
+            });
+            p.on("exit", function (code) {
+                code.should.equal(1);
+                deliverCalled.should.equal(true);
+                done();
             });
         });
     });
