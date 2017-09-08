@@ -13,6 +13,7 @@
     },
     "devDependencies": {
         "chai": "~1.5.0",
+        "coveralls": "^2.13.1",
         "express": "~3.4.2",
         "grunt": "~0.4.0",
         "grunt-bumpx": "latest",
@@ -31,7 +32,8 @@
     ],
     "license": "MIT",
     "scripts": {
-        "test": "nyc --reporter=lcov --reporter=text mocha"
+        "test": "nyc --reporter=lcov --reporter=text mocha && (if [ -n \"$TRAVIS\" ]; then cat ./coverage/lcov.info | coveralls; fi)",
+        "test:quick": "mocha"
     },
     "engine": {
         "node": ">=4"
