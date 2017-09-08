@@ -35,9 +35,9 @@ describe("express middleware", function() {
     });
     port = app.listen().address().port;
     return request.get("http://localhost:" + port + "/ping", function(err, res, body) {
-      var req;
       assert(deliverStub.calledOnce);
-      req = deliverStub.firstCall.thisValue.events[0].metaData.request;
+      var event = deliverStub.firstCall.thisValue.events[0];
+      var req = event.metaData.request;
       assert.equal(req.url, "http://localhost:" + port + "/ping");
       assert.equal(req.path, "/ping");
       assert.equal(req.method, "GET");
@@ -46,6 +46,10 @@ describe("express middleware", function() {
       assert.notEqual(["127.0.0.1", "::ffff:127.0.0.1"].indexOf(req.connection.remoteAddress), -1);
       assert.equal(req.connection.localPort, port);
       assert.notEqual(["IPv4", "IPv6"].indexOf(req.connection.IPVersion), -1);
+      // check the event got the correct handled/unhandled properties set
+      assert.equal(event.unhandled, true);
+      assert.equal(event.severity, "error");
+      assert.deepEqual(event.severityReason, { type: "middleware_handler", name: "express/connect" });
       return next();
     });
   });

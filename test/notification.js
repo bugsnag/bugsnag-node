@@ -105,7 +105,10 @@ describe("Notification", function() {
     it("should contain an event", function() {
         Bugsnag.notify("This is the message");
         deliverStub.firstCall.thisValue.events.length.should.equal(1);
-        deliverStub.firstCall.thisValue.events[0].should.have.keys("releaseStage", "exceptions", "device", "payloadVersion", "severity", "metaData");
+        deliverStub.firstCall.thisValue.events[0].should.have.keys(
+          "releaseStage", "exceptions", "device", "payloadVersion", "severity",
+          "metaData", "unhandled", "severityReason", "defaultSeverity"
+        );
     });
 
     it("should handle recursive fields in the payload", function() {
@@ -252,7 +255,7 @@ describe("Notification", function() {
             });
             Bugsnag.notify("This is the message");
             deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[0].should.not.have.property("inProject");
-            deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[3].should.have.property("inProject", true);
+            deliverStub.firstCall.thisValue.events[0].exceptions[0].stacktrace[4].should.have.property("inProject", true);
         });
     });
 
@@ -399,27 +402,65 @@ describe("Notification", function() {
         it("should automatically report process#uncaughtException events", function (done) {
             var p = child_process.fork(__dirname + "/lib/process-uncaught-exception.js");
             var deliverCalled = false;
+            var payload;
             p.on("message", function (msg) {
                 deliverCalled = msg.deliverCalled;
+                payload = msg.payload
             });
             p.on("exit", function (code) {
-                code.should.equal(1);
-                deliverCalled.should.equal(true);
-                done();
+                try {
+                  code.should.equal(1);
+                  deliverCalled.should.equal(true);
+                  var event = payload.events[0]
+                  event.severity.should.equal("error");
+                  event.defaultSeverity.should.equal(true);
+                  event.unhandled.should.equal(true);
+                  event.severityReason.should.eql({ type: "exception_handler" });
+                  done();
+                } catch (e) {
+                  done(e);
+                }
             });
         });
 
         it("should automatically report process#unhandledRejection events", function (done) {
             var p = child_process.fork(__dirname + "/lib/process-unhandled-rejection.js");
             var deliverCalled = false;
+            var payload;
             p.on("message", function (msg) {
                 deliverCalled = msg.deliverCalled;
+                payload = msg.payload
             });
             p.on("exit", function (code) {
-                code.should.equal(1);
-                deliverCalled.should.equal(true);
-                done();
+                try {
+                  code.should.equal(1);
+                  deliverCalled.should.equal(true);
+                  var event = payload.events[0]
+                  event.severity.should.equal("error");
+                  event.defaultSeverity.should.equal(true);
+                  event.unhandled.should.equal(true);
+                  event.severityReason.should.eql({ type: "promise_rejection" });
+                  done();
+                } catch (e) {
+                  done(e);
+                }
             });
         });
     });
+
+    describe("handledState properties", function (done) {
+      it("should not allow the user to set handledState properties", function (done) {
+          Bugsnag.notify("this is an outrage", {
+              severity: "info",
+              defaultSeverity: true,
+              unhandled: true,
+              severityReason: { type: "naughty" }
+          });
+          var event = deliverStub.firstCall.thisValue.events[0];
+          event.unhandled.should.equal(false);
+          should.not.exist(event.severityReason);
+          event.defaultSeverity.should.equal(false);
+          done();
+      })
+    })
 });
