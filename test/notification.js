@@ -351,6 +351,24 @@ describe("Notification", function() {
 
             Configuration.beforeNotifyCallbacks = [];
         });
+
+        it("should not be able to modify handledState", function () {
+            Bugsnag.onBeforeNotify(function (notification, error) {
+                notification.events[0].unhandled = true;
+                notification.events[0].defaultSeverity = false;
+            });
+            Bugsnag.notify(new Error('breaky'));
+            deliverStub.firstCall.thisValue.events[0].unhandled.should.equal(false);
+            deliverStub.firstCall.thisValue.events[0].defaultSeverity.should.equal(true);
+        });
+
+        it("should cause defaultSeverity=false if any callback changes severity", function () {
+          Bugsnag.onBeforeNotify(function (notification, error) {
+              notification.events[0].severity = "error";
+          });
+          Bugsnag.notify(new Error('breaky'));
+          deliverStub.firstCall.thisValue.events[0].defaultSeverity.should.equal(false);
+        })
     });
 
     describe("autoNotify", function() {
