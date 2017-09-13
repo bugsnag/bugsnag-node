@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 1.12.2 (2017-09-13)
+
+### Bug fixes
+
+* Handle and report invalid `notify(err)` argument. Fixes
+  [#110](https://github.com/bugsnag/bugsnag-node/issues/110).
+  [#114](https://github.com/bugsnag/bugsnag-node/pull/114)
+
 ## 1.12.1 (2017-09-01)
 
 ### Enhancements
