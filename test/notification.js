@@ -79,7 +79,7 @@ describe("Notification", function() {
     it("should have the correct notification format", function() {
         Bugsnag.notify("This is the message");
         deliverStub.firstCall.thisValue.should.be.an("object");
-        deliverStub.firstCall.thisValue.should.have.keys(["apiKey", "notifier", "events"]);
+        deliverStub.firstCall.thisValue.should.have.keys(["apiKey", "notifier", "events", "handledState"]);
     });
 
     it("should identify the notifier properly", function() {
@@ -107,7 +107,7 @@ describe("Notification", function() {
         deliverStub.firstCall.thisValue.events.length.should.equal(1);
         deliverStub.firstCall.thisValue.events[0].should.have.keys(
           "releaseStage", "exceptions", "device", "payloadVersion", "severity",
-          "metaData", "unhandled", "severityReason", "defaultSeverity"
+          "metaData", "unhandled", "severityReason"
         );
     });
 
@@ -355,19 +355,19 @@ describe("Notification", function() {
         it("should not be able to modify handledState", function () {
             Bugsnag.onBeforeNotify(function (notification, error) {
                 notification.events[0].unhandled = true;
-                notification.events[0].defaultSeverity = false;
+                notification.events[0].severityReason = { something: "else" };
             });
             Bugsnag.notify(new Error('breaky'));
             deliverStub.firstCall.thisValue.events[0].unhandled.should.equal(false);
-            deliverStub.firstCall.thisValue.events[0].defaultSeverity.should.equal(true);
+            deliverStub.firstCall.thisValue.events[0].severityReason.should.eql({ type: 'handledException' });
         });
 
-        it("should cause defaultSeverity=false if any callback changes severity", function () {
+        it("should cause severityReason = { type: 'userCallbackSetSeverity' } if any callback changes severity", function () {
           Bugsnag.onBeforeNotify(function (notification, error) {
               notification.events[0].severity = "error";
           });
           Bugsnag.notify(new Error('breaky'));
-          deliverStub.firstCall.thisValue.events[0].defaultSeverity.should.equal(false);
+          deliverStub.firstCall.thisValue.events[0].severityReason.should.eql({ type: 'userCallbackSetSeverity' });
         })
     });
 
@@ -431,9 +431,8 @@ describe("Notification", function() {
                   deliverCalled.should.equal(true);
                   var event = payload.events[0]
                   event.severity.should.equal("error");
-                  event.defaultSeverity.should.equal(true);
                   event.unhandled.should.equal(true);
-                  event.severityReason.should.eql({ type: "exception_handler" });
+                  event.severityReason.should.eql({ type: "unhandledException" });
                   done();
                 } catch (e) {
                   done(e);
@@ -455,9 +454,8 @@ describe("Notification", function() {
                   deliverCalled.should.equal(true);
                   var event = payload.events[0]
                   event.severity.should.equal("error");
-                  event.defaultSeverity.should.equal(true);
                   event.unhandled.should.equal(true);
-                  event.severityReason.should.eql({ type: "promise_rejection" });
+                  event.severityReason.should.eql({ type: "unhandledPromiseRejection" });
                   done();
                 } catch (e) {
                   done(e);
@@ -470,15 +468,14 @@ describe("Notification", function() {
       it("should not allow the user to set handledState properties", function (done) {
           Bugsnag.notify("this is an outrage", {
               severity: "info",
-              defaultSeverity: true,
               unhandled: true,
               severityReason: { type: "naughty" }
           });
           var event = deliverStub.firstCall.thisValue.events[0];
           event.unhandled.should.equal(false);
-          should.not.exist(event.severityReason);
-          event.defaultSeverity.should.equal(false);
+          event.severity.should.equal("info");
+          event.severityReason.should.eql({ type: "userSpecifiedSeverity" });
           done();
-      })
-    })
+      });
+    });
 });

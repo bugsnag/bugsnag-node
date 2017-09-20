@@ -18,10 +18,10 @@ describe("express middleware", function() {
   var deliverStub;
   deliverStub = null;
   beforeEach(function() {
-    return deliverStub = sinon.stub(Notification.prototype, "deliver");
+    return deliverStub = sinon.stub(Notification.prototype, "_deliver");
   });
   afterEach(function() {
-    return Notification.prototype.deliver.restore();
+    return Notification.prototype._deliver.restore();
   });
   return it("should automatically collect request data", function(next) {
     var app, port;
@@ -49,7 +49,7 @@ describe("express middleware", function() {
       // check the event got the correct handled/unhandled properties set
       assert.equal(event.unhandled, true);
       assert.equal(event.severity, "error");
-      assert.deepEqual(event.severityReason, { type: "middleware_handler", name: "express/connect" });
+      assert.deepEqual(event.severityReason, { type: "unhandledErrorMiddleware", attributes: { framework: "Express/Connect" } });
       return next();
     });
   });
