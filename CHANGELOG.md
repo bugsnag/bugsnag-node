@@ -1,6 +1,26 @@
 Changelog
 =========
 
+## 2.0.0 (2017-10-02)
+
+### Enhancements
+
+* Handle [`process#unhandledRejection`](https://nodejs.org/dist/latest-v8.x/docs/api/process.html#process_event_unhandledrejection)
+  by default.
+  ([#115](https://github.com/bugsnag/bugsnag-node/pull/115))
+* Added support for detecting whether an error was handled or unhandled.
+  ([#116](https://github.com/bugsnag/bugsnag-node/pull/116))
+
+### Notes
+
+Bugsnag will shut down your process after reporting a [`process#unhandledRejection`](https://nodejs.org/dist/latest-v8.x/docs/api/process.html#process_event_unhandledrejection)
+event. This is the most sensible thing to do by default, and it will become the
+default behaviour of a node process in the near future. However this is a breaking
+change for the module, hence the major/breaking version bump.
+
+If you want to do something else when `process#unhandledRejection` happens, you
+can set `options.autoNotifyUnhandledRejection=false`.
+
 ## 1.12.2 (2017-09-13)
 
 ### Bug fixes
