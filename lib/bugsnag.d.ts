@@ -20,7 +20,7 @@ declare namespace bugsnag {
         autoNotify(cb: () => void): any;
         autoNotify(options: NotifyOptions, cb: () => void): any;
         shouldNotify(): boolean;
-        onBeforeNotify(cb: (notification: any) => boolean | void): void;
+        onBeforeNotify(cb: (notification: any) => boolean | void, error?: Error): void;
     }
 
     interface ConfigurationOptions {
