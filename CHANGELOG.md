@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## 2.0.1 (2017-10-23)
+
+### Bug fixes
+
+* Fix type annotations
+  [Dan Prince](https://github.com/danprince).
+  [#118](https://github.com/bugsnag/bugsnag-node/pull/118)
+* Fix `autoNotifyUnhandledRejection` option
+
 ## 2.0.0 (2017-10-02)
 
 ### Enhancements
