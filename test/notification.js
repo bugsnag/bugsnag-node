@@ -423,13 +423,13 @@ describe("Notification", function() {
             var payload;
             p.on("message", function (msg) {
                 deliverCalled = msg.deliverCalled;
-                payload = msg.payload
+                payload = msg.payload;
             });
             p.on("exit", function (code) {
                 try {
                   code.should.equal(1);
                   deliverCalled.should.equal(true);
-                  var event = payload.events[0]
+                  var event = payload.events[0];
                   event.severity.should.equal("error");
                   event.unhandled.should.equal(true);
                   event.severityReason.should.eql({ type: "unhandledException" });
@@ -446,16 +446,34 @@ describe("Notification", function() {
             var payload;
             p.on("message", function (msg) {
                 deliverCalled = msg.deliverCalled;
-                payload = msg.payload
+                payload = msg.payload;
             });
             p.on("exit", function (code) {
                 try {
                   code.should.equal(1);
                   deliverCalled.should.equal(true);
-                  var event = payload.events[0]
+                  var event = payload.events[0];
                   event.severity.should.equal("error");
                   event.unhandled.should.equal(true);
                   event.severityReason.should.eql({ type: "unhandledPromiseRejection" });
+                  done();
+                } catch (e) {
+                  done(e);
+                }
+            });
+        });
+
+        it("should support autoNotifyUnhandledRejection=false", function (done) {
+            var p = child_process.fork(__dirname + "/lib/process-unhandled-rejection.js", { env: { NOTIFY_UNHANDLED_REJECTION: 'no' } });
+            var deliverCalled = false;
+            var payload;
+            p.on("message", function (msg) {
+                deliverCalled = msg.deliverCalled;
+            });
+            p.on("exit", function (code) {
+                try {
+                  code.should.equal(0);
+                  deliverCalled.should.equal(false);
                   done();
                 } catch (e) {
                   done(e);
