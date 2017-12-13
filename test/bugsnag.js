@@ -100,3 +100,7 @@ describe("Bugsnag", function() {
         });
     });
 });
+
+require("./sessions/session");
+require("./sessions/tracker");
+require("./sessions/delegate");

@@ -56,6 +56,28 @@ describe("Notification transport", function() {
     });
 });
 
+describe("Notification headers", function() {
+    beforeEach(function() {
+        sinon.stub(request, "post");
+        sinon.stub(Notification.prototype, "loadCode").callsArg(0);
+    });
+
+    afterEach(function() {
+        request.post.restore();
+        Notification.prototype.loadCode.restore();
+    });
+
+    it("should have the apiKey, payloadVersion and ", function() {
+      Bugsnag.notify("This is the message");
+      request.post.firstCall.args[0].headers["Bugsnag-Payload-Version"].should.equal("4.0");
+    });
+
+    it("should have the apiKey", function() {
+      Bugsnag.notify("This is the message");
+      request.post.firstCall.args[0].headers["Bugsnag-Api-Key"].should.equal(apiKey);
+    });
+});
+
 describe("Notification", function() {
     beforeEach(function() {
         Bugsnag.configure({
@@ -106,7 +128,7 @@ describe("Notification", function() {
         Bugsnag.notify("This is the message");
         deliverStub.firstCall.thisValue.events.length.should.equal(1);
         deliverStub.firstCall.thisValue.events[0].should.have.keys(
-          "releaseStage", "exceptions", "device", "payloadVersion", "severity",
+          "app", "exceptions", "device", "severity",
           "metaData", "unhandled", "severityReason"
         );
     });
@@ -134,13 +156,6 @@ describe("Notification", function() {
         var payloadObject = JSON.parse(payload)
         payloadObject.items.a.foo.should.equal('bar');
         payloadObject.items.b.foo.should.equal('bar');
-    });
-
-    describe("payloadVersion", function() {
-        it("should have a payloadVersion", function() {
-            Bugsnag.notify("This is the message");
-            deliverStub.firstCall.thisValue.events[0].payloadVersion.should.equal("2");
-        });
     });
 
     describe("severity", function() {
@@ -197,7 +212,7 @@ describe("Notification", function() {
                 appVersion: "BugsnagVersion"
             });
             Bugsnag.notify("This is the message");
-            deliverStub.firstCall.thisValue.events[0].appVersion.should.equal("BugsnagVersion");
+            deliverStub.firstCall.thisValue.events[0].app.version.should.equal("BugsnagVersion");
         });
     });
 
@@ -219,7 +234,7 @@ describe("Notification", function() {
                 releaseStage: "production"
             });
             Bugsnag.notify("This is the message");
-            deliverStub.firstCall.thisValue.events[0].releaseStage.should.equal("production");
+            deliverStub.firstCall.thisValue.events[0].app.releaseStage.should.equal("production");
         });
     });
 

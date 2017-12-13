@@ -37,15 +37,16 @@ describe("express middleware", function() {
     return request.get("http://localhost:" + port + "/ping", function(err, res, body) {
       assert(deliverStub.calledOnce);
       var event = deliverStub.firstCall.thisValue.events[0];
-      var req = event.metaData.request;
+      var req = event.request;
+      var metaReq = event.metaData.request;
       assert.equal(req.url, "http://localhost:" + port + "/ping");
-      assert.equal(req.path, "/ping");
-      assert.equal(req.method, "GET");
+      assert.equal(metaReq.path, "/ping");
+      assert.equal(req.httpMethod, "GET");
       assert.equal(req.headers.host, "localhost:" + port);
-      assert.equal(req.httpVersion, "1.1");
-      assert.notEqual(["127.0.0.1", "::ffff:127.0.0.1"].indexOf(req.connection.remoteAddress), -1);
-      assert.equal(req.connection.localPort, port);
-      assert.notEqual(["IPv4", "IPv6"].indexOf(req.connection.IPVersion), -1);
+      assert.equal(metaReq.httpVersion, "1.1");
+      assert.notEqual(["127.0.0.1", "::ffff:127.0.0.1"].indexOf(metaReq.connection.remoteAddress), -1);
+      assert.equal(metaReq.connection.localPort, port);
+      assert.notEqual(["IPv4", "IPv6"].indexOf(metaReq.connection.IPVersion), -1);
       // check the event got the correct handled/unhandled properties set
       assert.equal(event.unhandled, true);
       assert.equal(event.severity, "error");
