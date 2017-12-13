@@ -1,7 +1,7 @@
 {
   "name": "bugsnag",
   "description": "Bugsnag notifier for node.js scripts",
-  "version": "2.0.1",
+  "version": "2.1.0-0",
   "main": "./lib/bugsnag.js",
   "typings": "./lib/bugsnag.d.ts",
   "homepage": "http://bugsnag.com",
