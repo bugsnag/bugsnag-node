@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 2.1.1 (2018-01-08)
+
+### Bug fixes
+
+* The runtime dependency "backo" was in `devDependencies` in package.json. It has been moved to `dependencies` (fixes #125).
+
 ## 2.1.0 (2018-01-08)
 
 ### Enhancements
