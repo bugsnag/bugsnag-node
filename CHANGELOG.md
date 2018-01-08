@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## 2.1.0 (2018-01-08)
+
+### Enhancements
+
+* Support for tracking sessions and overall crash rate of web requests by setting `sessionTrackingEnabled` to `true`.
+
+### Bug fixes
+
+* Prevent duplicate logging when uncaught error report is not delivered (#124)
+
 ## 2.0.1 (2017-10-23)
 
 ### Bug fixes
