@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 2.1.2 (2018-01-09)
+
+### Enhancements
+
+* Migrate option name `sessionTrackingEnabled` -> `autoCaptureSessions` for consistency with other notifiers
+* Session reporting now respects the `notifyReleaseStages` and will only send if error reports will
+
 ## 2.1.1 (2018-01-08)
 
 ### Bug fixes
