@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 2.1.3 (2018-01-25)
+
+### Bug fixes
+
+* Reverted a payload change which made the notifier not backwards compatible with older versions of Bugsnag On-premise [#128](https://github.com/bugsnag/bugsnag-node/pull/128)
+
 ## 2.1.2 (2018-01-09)
 
 ### Enhancements
