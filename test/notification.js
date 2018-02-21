@@ -90,6 +90,7 @@ describe("Notification", function() {
     afterEach(function() {
         Notification.prototype._deliver.restore();
         Configuration.beforeNotifyCallbacks = []
+        Bugsnag.metaData = {}
         Notification.prototype.loadCode.restore();
     });
 
@@ -508,6 +509,35 @@ describe("Notification", function() {
           event.unhandled.should.equal(false);
           event.severity.should.equal("info");
           event.severityReason.should.eql({ type: "userSpecifiedSeverity" });
+          done();
+      });
+    });
+
+    describe("filters", function (done) {
+      it("should filter metaData with keys matching default Configuration.filters", function (done) {
+          Bugsnag.notify("uh oh", { account: { id: '123', password: "s0 s3cure"} });
+          var payload = deliverStub.firstCall.thisValue.serializePayload();
+          var payloadObject = JSON.parse(payload)
+          payloadObject.events[0].metaData.account.password.should.equal('[FILTERED]')
+          done();
+      });
+
+      it("should filter metaData with keys matching custom Configuration.filters", function (done) {
+          Bugsnag.configure({ filters: [ 'flip' ]})
+          Bugsnag.notify("uh oh", { abbc: { id: '123', flip: "112" } });
+          var payload = deliverStub.firstCall.thisValue.serializePayload();
+          var payloadObject = JSON.parse(payload)
+          payloadObject.events[0].metaData.abbc.flip.should.equal('[FILTERED]')
+          done();
+      });
+
+      it("should filter the request property", function (done) {
+          Bugsnag.configure({ filters: [ 'Authorization' ]})
+          Bugsnag.notify("uh oh", { req: { headers: { 'Authorization': 's0 s3cure', 'x-beep-boop': 100 } } });
+          var payload = deliverStub.firstCall.thisValue.serializePayload();
+          var payloadObject = JSON.parse(payload)
+          payloadObject.events[0].request.headers['x-beep-boop'].should.equal(100)
+          payloadObject.events[0].request.headers['Authorization'].should.equal('[FILTERED]')
           done();
       });
     });
