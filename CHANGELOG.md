@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## 2.2.0 (2018-02-22)
+
+### Enhancements
+
+* Apply `Configuation.filters` to all aspects of the payload that can contain custom data [#131](https://github.com/bugsnag/bugsnag-node/pull/131)
+
+### Bug fixes
+
+* Don't call `req.connection.address()` in `requestInfo()` if it's not available (to support express-like [`serverless-http`](https://github.com/dougmoscrop/serverless-http) framework) [Julien Guépin](https://github.com/jguepin) [#132](https://github.com/bugsnag/bugsnag-node/pull/132)
+
 ## 2.1.3 (2018-01-25)
 
 ### Bug fixes
