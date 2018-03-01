@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 2.3.0 (2018-03-01)
+
+### Enhancements
+
+* Improve serialization of class-based data structures which expose a `.toJSON()` method [#134](https://github.com/bugsnag/bugsnag-node/pull/134)
+
 ## 2.2.0 (2018-02-22)
 
 ### Enhancements
