@@ -1,7 +1,8 @@
 "use strict";
 
 var should = require("chai").should(),
-    Utils = require("../lib/utils");
+    Utils = require("../lib/utils"),
+    ObjectID = require("bson-objectid");
 
 describe("utils", function() {
     describe("typeOf", function() {
@@ -134,6 +135,16 @@ describe("utils", function() {
             should.exist(clone);
             clone.should.have.keys("firstKey", "secondKey");
             return clone.secondKey.should.be.an("object");
+        });
+
+        it("should call an object's toJSON (if it exists) before copying", function () {
+            var source = {
+                oid: ObjectID()
+            };
+            var clone = Utils.cloneObject(source);
+            should.exist(clone);
+            clone.should.have.keys("oid");
+            (typeof clone.oid).should.equal("string");
         });
     });
 
