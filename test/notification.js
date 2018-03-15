@@ -217,6 +217,16 @@ describe("Notification", function() {
         });
     });
 
+    describe("appType", function() {
+        it("should send an appType when configured on Bugsnag", function() {
+            Bugsnag.configure({
+                appType: "worker"
+            });
+            Bugsnag.notify("This is the message");
+            deliverStub.firstCall.thisValue.events[0].app.type.should.equal("worker");
+        });
+    });
+
     describe("releaseStage", function() {
         it("shouldnt send a notification when releaseStage isnt configured in notifyReleaseStages", function() {
             Bugsnag.configure({
