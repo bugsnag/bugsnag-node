@@ -5,8 +5,8 @@ Changelog
 
 ### Enhancements
 
-* Support configuration of appType [#139](https://github.com/bugsnag/bugsnag-node/pull/134), fixes [#126](https://github.com/bugsnag/bugsnag-node/issues/126)
-* Improve logging clarity for unhandled exceptions [#139](https://github.com/bugsnag/bugsnag-node/pull/137)
+* Support configuration of appType [#139](https://github.com/bugsnag/bugsnag-node/pull/139), fixes [#126](https://github.com/bugsnag/bugsnag-node/issues/126)
+* Improve logging clarity for unhandled exceptions [#137](https://github.com/bugsnag/bugsnag-node/pull/137)
 
 ## 2.3.0 (2018-03-01)
 
