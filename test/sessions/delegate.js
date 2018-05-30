@@ -25,7 +25,7 @@ describe('session delegate', () => {
     })
     createSessionDelegate({
       logger: { info: () => {}, warn: () => {} },
-      sessionEndpoint: 'blah',
+      endpoints: { sessions: 'blah' },
       notifyReleaseStages: null
     }).startSession({})
   })
@@ -55,7 +55,7 @@ describe('session delegate', () => {
           setTimeout(done, 150)
         }
       },
-      sessionEndpoint: 'blah',
+      endpoints: { sessions: 'blah' },
       releaseStage: 'qa',
       notifyReleaseStages: [ 'production' ]
     }).startSession({})
