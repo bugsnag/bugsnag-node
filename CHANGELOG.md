@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 2.4.0 (2018-06-01)
 
 **Note**: this release alters the behaviour of the notifier to track sessions automatically.
 
