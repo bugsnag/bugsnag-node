@@ -1,6 +1,36 @@
 Changelog
 =========
 
+## TBD
+
+**Note**: this release alters the behaviour of the notifier to track sessions automatically.
+
+As part of this change, the way in which URLs are configured has been updated:
+
+```diff
+- useSSL: true,
+- notifyHost: 'bugsnag-notify.example.com',
+- notifyPort: 9876
+- notifyPath: '/payloads'
+- sessionEndpoint: 'https://bugsnag-sessions.example.com',
++ endpoints: {
++  notify: 'https://bugsnag-notify.example.com:9876/payloads',
++  sessions: 'https://bugsnag-sessions.example.com'
++ }
+```
+
+`useSSL`, `notifyHost`, `notifyPort`, `notifyPath` and `sessionEndpoint` are now deprecated but still supported. Note that session tracking will be disabled if the notify endpoint is configured but the sessions endpoint is not – this is to avoid inadvertently sending session payloads to the wrong server.
+
+### Added
+- Unit tests have been added for `lib/configuration.js` (#143)
+
+### Changed
+- `autoCaptureSessions` default value was `false` and is now true (#143)
+- The interval used to send periodic session summaries now has [`unref()`](https://nodejs.org/api/timers.html#timers_timeout_unref) called on it, to avoid keeping a process running that would otherwise terminate (#143)
+
+### Deprecated
+- `useSSL`, `notifyHost`, `notifyPort`, `notifyPath` and `sessionEndpoint` have been deprecated and combined into a single new option: `endpoints` (#143)
+
 ## 2.3.1 (2018-03-15)
 
 ### Enhancements
