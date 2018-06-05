@@ -5,11 +5,12 @@ const { attemptLogin, loadSession } = require("./api");
 
 const app = express();
 
-app.use(bodyParser.json());
-
 // We need to add the Bugsnag request handler middleware, so when an async error occurs we're
 // able to notify any middleware in the chain (in this case the Bugsnag error handler).
 app.use(bugsnag.requestHandler);
+
+// Parse the request body into JSON
+app.use(bodyParser.json());
 
 // In your application, it's likely you have some form of session system. For this example, we're
 // just adding some fake user information to any unhandled errors, so we can track what kind of
