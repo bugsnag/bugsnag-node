@@ -22,11 +22,13 @@ function attemptLogin(username, password) {
 function loadSession(req, res, next) {
   // We may not always be reporting errors manually. What happens if there's an error we didn't anticipate?
   // In that case we can attach some user data to the request, so we know which user was affected by the error.
-  bugsnag.requestData.user = {
-    id: 1,
-    name: "james",
-    plan: "beast-mode",
-  };
+  if (bugsnag.requestData) {
+    bugsnag.requestData.user = {
+      id: 1,
+      name: "james",
+      plan: "beast-mode",
+    };
+  }
   next(null);
 }
 
