@@ -24,25 +24,42 @@ declare namespace bugsnag {
     }
 
     interface ConfigurationOptions {
-        logger?: any;
-        logLevel?: string;
-        releaseStage?: string;
+        appType?: string;
         appVersion?: string;
+        autoCaptureSessions?: boolean;
         autoNotify?: boolean;
-        useSSL?: boolean;
+        autoNotifyUnhandledRejection?: boolean;
+        endpoints?: Endpoints;
         filters?: string[];
-        notifyReleaseStages?: string[];
-        notifyHost?: string;
-        notifyPort?: number;
-        notifyPath?: string;
-        metaData?: { [key: string]: any };
-        onUncaughtError?(error: string | Error): void;
-        hostname?: string;
-        proxy?: string;
         headers?: { [key: string]: string };
-        projectRoot?: string;
+        hostname?: string;
+        logger?: Logger;
+        logLevel?: string;
+        metaData?: { [key: string]: any };
+        notifyHost?: string;
+        notifyPath?: string;
+        notifyPort?: number;
+        notifyReleaseStages?: string[];
+        onUncaughtError?(error: string | Error): void;
         packageJSON?: string;
+        projectRoot?: string;
+        proxy?: string;
+        releaseStage?: string;
         sendCode?: boolean;
+        sessionEndpoint?: string;
+        useSSL?: boolean;
+    }
+
+    interface Logger {
+        info();
+        warn();
+        error();
+        debug();
+    }
+    
+    interface Endpoints {
+        notify: string;
+        sessions?: string;
     }
 
     interface NotifyOptions {
