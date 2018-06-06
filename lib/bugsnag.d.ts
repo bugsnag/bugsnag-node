@@ -54,11 +54,12 @@ declare namespace bugsnag {
         info();
         warn();
         error();
+        debug();
     }
     
     interface Endpoints {
         notify: string;
-        sessions: string;
+        sessions?: string;
     }
 
     interface NotifyOptions {
