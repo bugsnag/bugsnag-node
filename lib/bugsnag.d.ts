@@ -51,12 +51,12 @@ declare namespace bugsnag {
     }
 
     interface Logger {
-        info();
-        warn();
-        error();
-        debug();
+        info(): void;
+        warn(): void;
+        error(): void;
+        debug(): void;
     }
-    
+
     interface Endpoints {
         notify: string;
         sessions?: string;
