@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## 2.4.1 (2018-06-07)
+
+### Fixed
+- TypeScript definitions updated to match current configuration options (#144) (@amrocha)
+
 ## 2.4.0 (2018-06-01)
 
 **Note**: this release alters the behaviour of the notifier to track sessions automatically.
