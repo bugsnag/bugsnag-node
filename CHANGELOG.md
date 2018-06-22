@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## 2.4.3 (2018-06-22)
+
+### Fixed
+- Add missing `app` properties to session payload (#150)
+
 ## 2.4.2 (2018-06-12)
 
 ### Fixed
