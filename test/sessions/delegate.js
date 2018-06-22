@@ -60,4 +60,42 @@ describe('session delegate', () => {
       notifyReleaseStages: [ 'production' ]
     }).startSession({})
   })
+
+  it('should include the correct app and device payload properties', done => {
+    class TrackerMock extends Emitter {
+      start () {
+        this.emit('summary', [
+          { startedAt: '2017-12-12T13:54:00.000Z', sessionsStarted: 123 }
+        ])
+      }
+      stop () {}
+      track () {}
+    }
+    const createSessionDelegate = proxyquire('../../lib/sessions', {
+      './tracker': TrackerMock,
+      'request': (opts) => {
+        const body = JSON.parse(opts.body)
+        body.sessionCounts.length.should.equal(1)
+        body.sessionCounts[0].sessionsStarted.should.equal(123)
+        body.device.should.eql({
+          hostname: 'test-machine.local'
+        })
+        body.app.should.eql({
+          version: '1.2.3',
+          releaseStage: 'qa',
+          type: 'server'
+        })
+        done()
+      }
+    })
+    createSessionDelegate({
+      logger: { info: () => {}, warn: () => {} },
+      endpoints: { sessions: 'blah' },
+      notifyReleaseStages: null,
+      releaseStage: 'qa',
+      appType: 'server',
+      appVersion: '1.2.3',
+      hostname: 'test-machine.local'
+    }).startSession({})
+  })
 })
